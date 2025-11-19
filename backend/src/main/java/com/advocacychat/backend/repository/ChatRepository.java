@@ -1,4 +1,9 @@
 package com.advocacychat.backend.repository;
 
-public interface ChatRepository {
+import com.advocacychat.backend.model.ChatModel;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ChatRepository extends JpaRepository<ChatModel, Integer> {
 }

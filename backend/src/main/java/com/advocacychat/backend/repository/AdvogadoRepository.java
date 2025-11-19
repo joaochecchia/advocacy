@@ -1,4 +1,9 @@
 package com.advocacychat.backend.repository;
 
-public interface AdvogadoRepository {
+import com.advocacychat.backend.model.AdvogadoModel;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AdvogadoRepository extends JpaRepository<AdvogadoModel, Integer> {
 }
