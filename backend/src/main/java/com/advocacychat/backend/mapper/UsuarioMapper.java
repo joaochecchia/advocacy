@@ -2,6 +2,7 @@ package com.advocacychat.backend.mapper;
 
 import com.advocacychat.backend.dto.UsuarioDTO;
 import com.advocacychat.backend.enums.TipoUsuario;
+import com.advocacychat.backend.model.AdvogadoModel;
 import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.request.UsuarioRequest;
@@ -67,13 +68,13 @@ public class UsuarioMapper {
         model.setAtivo(request.ativo());
 
         if (model.getTipoUsuario() == TipoUsuario.CLIENTE) {
-            var cliente = clienteMapper.dtoToModel(request.clienteDTO());
+            ClienteModel cliente = clienteMapper.dtoToModel(request.clienteDTO());
             cliente.setUsuarioModel(model);
             model.setCliente(cliente);
         }
 
         if (model.getTipoUsuario() == TipoUsuario.ADVOGADO) {
-            var advogado = advogadoMapper.dtoToModel(request.advogadoDTO());
+            AdvogadoModel advogado = advogadoMapper.dtoToModel(request.advogadoDTO());
             advogado.setUsuarioModel(model);
             model.setAdvogado(advogado);
         }
