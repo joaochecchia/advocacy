@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,4 +38,10 @@ public class UsuarioModel {
 
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
+
+    @OneToOne(mappedBy = "usuarioModel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private AdvogadoModel advogado;
+
+    @OneToOne(mappedBy = "usuarioModel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ClienteModel cliente;
 }

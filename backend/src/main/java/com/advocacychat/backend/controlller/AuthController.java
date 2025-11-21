@@ -2,6 +2,7 @@ package com.advocacychat.backend.controlller;
 
 import com.advocacychat.backend.dto.UsuarioDTO;
 import com.advocacychat.backend.mapper.UsuarioMapper;
+import com.advocacychat.backend.request.UsuarioRequest;
 import com.advocacychat.backend.response.UsuarioResponse;
 import com.advocacychat.backend.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,8 @@ public class AuthController {
     private final UsuarioMapper usuarioMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<UsuarioResponse> register(@RequestBody UsuarioDTO usuarioDTO){
-        Optional<UsuarioResponse> newUser = userService.registerUser(usuarioDTO);
+    public ResponseEntity<UsuarioResponse> register(@RequestBody UsuarioRequest request){
+        Optional<UsuarioResponse> newUser = userService.registerUser(request);
 
         return ResponseEntity.ok(newUser.get());
     }

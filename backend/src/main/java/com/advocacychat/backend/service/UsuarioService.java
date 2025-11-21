@@ -4,6 +4,7 @@ import com.advocacychat.backend.dto.UsuarioDTO;
 import com.advocacychat.backend.mapper.UsuarioMapper;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.repository.UsuarioRepository;
+import com.advocacychat.backend.request.UsuarioRequest;
 import com.advocacychat.backend.response.UsuarioResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,8 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    public Optional<UsuarioResponse> registerUser(UsuarioDTO usuarioDTO) {
-        UsuarioModel usuarioModel = usuarioMapper.dtoToModel(usuarioDTO);
+    public Optional<UsuarioResponse> registerUser(UsuarioRequest request) {
+        UsuarioModel usuarioModel = usuarioMapper.requestToModel(request);
 
         UsuarioModel novoUsuario = usuarioRepository.save(usuarioModel);
 

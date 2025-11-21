@@ -1,13 +1,21 @@
 package com.advocacychat.backend.mapper;
 
 import com.advocacychat.backend.dto.UsuarioDTO;
+import com.advocacychat.backend.enums.TipoUsuario;
+import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.request.UsuarioRequest;
 import com.advocacychat.backend.response.UsuarioResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class UsuarioMapper {
+
+    private final AdvogadoMapper advogadoMapper;
+
+    private final ClienteMapper clienteMapper;
 
     public UsuarioDTO modelToDto(UsuarioModel model) {
         if (model == null) return null;
@@ -47,4 +55,30 @@ public class UsuarioMapper {
                 dto.getEmail()
         );
     }
+
+    public UsuarioModel requestToModel(UsuarioRequest request) {
+        if (request == null) return null;
+
+        UsuarioModel model = new UsuarioModel();
+        model.setNome(request.nome());
+        model.setEmail(request.email());
+        model.setSenhaHash(request.senhaHash());
+        model.setTipoUsuario(request.tipoUsuario());
+        model.setAtivo(request.ativo());
+
+        if (model.getTipoUsuario() == TipoUsuario.CLIENTE) {
+            var cliente = clienteMapper.dtoToModel(request.clienteDTO());
+            cliente.setUsuarioModel(model);
+            model.setCliente(cliente);
+        }
+
+        if (model.getTipoUsuario() == TipoUsuario.ADVOGADO) {
+            var advogado = advogadoMapper.dtoToModel(request.advogadoDTO());
+            advogado.setUsuarioModel(model);
+            model.setAdvogado(advogado);
+        }
+
+        return model;
+    }
+
 }
