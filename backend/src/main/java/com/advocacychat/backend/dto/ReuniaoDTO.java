@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class ReuniaoDTO {
-    private Integer id;
-    private Integer clienteId;
-    private Integer advogadoId;
+    private Long id;
+    private Long clienteId;
+    private Long advogadoId;
     private LocalDateTime dataHora;
     private StatusReuniao status;
     private LocalDateTime criadoEm;

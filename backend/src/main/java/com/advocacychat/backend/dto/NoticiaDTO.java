@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 
 @Data
 public class NoticiaDTO {
-    private Integer id;
+    private Long id;
     private String titulo;
     private String conteudo;
-    private Integer autorId;
+    private Long autorId;
     private LocalDateTime publicadoEm;
     private Boolean ativo;
 }

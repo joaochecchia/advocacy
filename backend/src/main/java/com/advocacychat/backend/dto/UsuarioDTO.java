@@ -7,10 +7,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class UsuarioDTO {
-    private Integer id;
+    private Long id;
     private String nome;
     private String email;
-    private String senhaHash;
     private TipoUsuario tipoUsuario;
     private Boolean ativo;
     private LocalDateTime criadoEm;

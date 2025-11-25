@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class ClienteDTO {
-    private Integer id;
-    private Integer usuarioId;
+    private Long id;
+    private Long usuarioId;
     private String cpf;
     private String telefone;
     LocalDateTime criadoEm;

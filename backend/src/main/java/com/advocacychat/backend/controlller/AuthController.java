@@ -9,16 +9,11 @@ import com.advocacychat.backend.response.LoginResponse;
 import com.advocacychat.backend.response.UsuarioResponse;
 import com.advocacychat.backend.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -59,4 +54,10 @@ public class AuthController {
                 token
         ));
     }
+
+    @GetMapping("/teste")
+    public String teste(){
+        return "Teste concluido";
+    }
+
 }

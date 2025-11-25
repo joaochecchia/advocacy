@@ -45,7 +45,7 @@ public class TokenConfig {
                     .verify(token);
 
             return Optional.of(JWTUserData.builder()
-                    .id(jwt.getClaim("userId").asInt())
+                    .id(jwt.getClaim("userId").asLong())
                     .name(jwt.getClaim("name").asString())
                     .email(jwt.getSubject())
                     .build());

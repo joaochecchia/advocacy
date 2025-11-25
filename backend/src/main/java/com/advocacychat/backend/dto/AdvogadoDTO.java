@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class AdvogadoDTO {
-    private Integer id;
-    private Integer usuarioId;
+    private Long id;
+    private Long usuarioId;
     private String oab;
     private String especialidade;
     private LocalDateTime criadoEm;

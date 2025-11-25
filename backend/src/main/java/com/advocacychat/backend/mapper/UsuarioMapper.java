@@ -25,7 +25,6 @@ public class UsuarioMapper {
         dto.setId(model.getId());
         dto.setNome(model.getNome());
         dto.setEmail(model.getEmail());
-        dto.setSenhaHash(model.getSenhaHash());
         dto.setTipoUsuario(model.getTipoUsuario());
         dto.setAtivo(model.getAtivo());
         dto.setCriadoEm(model.getCriadoEm() != null ? model.getCriadoEm(): null);
@@ -41,7 +40,6 @@ public class UsuarioMapper {
         model.setId(dto.getId());
         model.setNome(dto.getNome());
         model.setEmail(dto.getEmail());
-        model.setSenhaHash(dto.getSenhaHash());
         model.setTipoUsuario(dto.getTipoUsuario());
         model.setAtivo(dto.getAtivo());
 

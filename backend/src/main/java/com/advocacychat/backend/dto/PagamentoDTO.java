@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class PagamentoDTO {
-    private Integer id;
-    private Integer clienteId;
-    private Integer planoId;
+    private Long id;
+    private Long clienteId;
+    private Long planoId;
     private String gateway;
     private String gatewayCustomerId;
     private String paymentMethodToken;

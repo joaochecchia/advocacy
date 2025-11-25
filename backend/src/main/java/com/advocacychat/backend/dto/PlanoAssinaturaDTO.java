@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class PlanoAssinaturaDTO {
-    private Integer id;
+    private Long id;
     private String nome;
     private Double preco;
     private String descricao;

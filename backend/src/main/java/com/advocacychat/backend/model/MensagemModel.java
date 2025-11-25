@@ -15,7 +15,7 @@ public class MensagemModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "chat_id", nullable = false)

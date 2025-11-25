@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class MensagemDTO {
-    private Integer id;
-    private Integer chatId;
-    private Integer remetenteId;
+    private Long id;
+    private Long chatId;
+    private Long remetenteId;
     private String conteudo;
     private OrigemMensagem origem;
     private LocalDateTime criadoEm;
