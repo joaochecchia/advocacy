@@ -40,7 +40,7 @@ public class ClienteController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("patchCliente/{id}")
+    @PatchMapping("/patchCliente/{id}")
     public ResponseEntity<Map<String, Object>> patchClienteByUserId(@PathVariable Long id, @RequestBody ClienteDTO request){
         Optional<ClienteResponse> cliente = clienteService.patchClienteById(id, request);
 

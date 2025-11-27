@@ -13,10 +13,10 @@ import java.util.Map;
 @RestControllerAdvice
 public class ControllerExceptions {
 
-    @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleNotFindObjectByIdentifier(BadCredentialsException ex){
+    @ExceptionHandler(NotFindObjectByIdentifierException.class)
+    public ResponseEntity<Map<String, String>> handleNotFindObjectByIdentifier(NotFindObjectByIdentifierException ex){
         Map<String, String> response = new HashMap<>();
-        response.put("Error: ", ex.getMessage());
+        response.put("error", ex.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
