@@ -56,6 +56,11 @@ public class UsuarioService {
             throw new PasswordDontMatchException("Senha atual incorreta.");
         }
 
+        String regex = "^(?=.*[A-Z])(?=.*[0-9]).{8,}$";
+        if (!request.novaSenha().matches(regex)) {
+            throw new PasswordDontMatchException("Senha nao cumpre com os requisitos.");
+        }
+
         usuario.setSenhaHash(passwordEncoder.encode(request.novaSenha()));
         usuarioRepository.save(usuario);
 
