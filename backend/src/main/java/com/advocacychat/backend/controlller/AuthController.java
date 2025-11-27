@@ -5,6 +5,7 @@ import com.advocacychat.backend.enums.TipoUsuario;
 import com.advocacychat.backend.model.AdvogadoModel;
 import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
+import com.advocacychat.backend.request.AlterarSenhaRequest;
 import com.advocacychat.backend.request.LoginRequest;
 import com.advocacychat.backend.request.UsuarioRequest;
 import com.advocacychat.backend.response.LoginResponse;
@@ -61,6 +62,16 @@ public class AuthController {
         ));
 
         System.out.println("TOKEN: " + token);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/alterarSenha/{id}")
+    public ResponseEntity<Map<String, Object>> alterarSenha(@PathVariable Long id, @RequestBody AlterarSenhaRequest request){
+        String novaSenha = userService.alterarSenha(id, request);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("Message", novaSenha);
 
         return ResponseEntity.ok(response);
     }

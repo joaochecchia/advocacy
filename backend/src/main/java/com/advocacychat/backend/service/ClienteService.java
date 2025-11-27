@@ -1,15 +1,17 @@
 package com.advocacychat.backend.service;
 
 import com.advocacychat.backend.dto.ClienteDTO;
+import com.advocacychat.backend.enums.TipoUsuario;
 import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
 import com.advocacychat.backend.mapper.ClienteMapper;
 import com.advocacychat.backend.model.ClienteModel;
+import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.repository.ClienteRepository;
 import com.advocacychat.backend.response.ClienteResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -41,20 +43,49 @@ public class ClienteService {
     }
 
 
-    public Optional<ClienteResponse> patchClienteById(Long id, ClienteDTO request){
-        Optional<ClienteModel> verificarModel = clienteRepository.findById(id);
+    public Optional<ClienteResponse> patchClienteById(Long id, ClienteDTO request) {
+        ClienteModel model = clienteRepository.findById(id)
+                .orElseThrow(() -> new NotFindObjectByIdentifierException(
+                        "Cliente com id " + id + " nao existe."
+                ));
 
-        if(verificarModel.isEmpty()){
-            throw new NotFindObjectByIdentifierException("Cliente com id " + id + " nao existe.");
+        if (request.getCpf() != null) {
+            model.setCpf(request.getCpf());
         }
 
-        request.setId(request.getId());
-        request.setUsuarioId(request.getUsuarioId());
+        if (request.getTelefone() != null) {
+            model.setTelefone(request.getTelefone());
+        }
 
-        ClienteModel clienteEditado = clienteRepository.save(clienteMapper.dtoToModel(request));
+        if (request.getCriadoEmCliente() != null) {
+            model.setCriadoEm(request.getCriadoEmCliente());
+        }
 
-        return Optional.of(ClienteResponse.fromModel(clienteEditado));
+        UsuarioModel usuario = model.getUsuarioModel();
+
+        if (request.getNome() != null) {
+            usuario.setNome(request.getNome());
+        }
+
+        if (request.getEmail() != null) {
+            usuario.setEmail(request.getEmail());
+        }
+
+        if (request.getTipoUsuario() != null) {
+            usuario.setTipoUsuario(TipoUsuario.valueOf(request.getTipoUsuario()));
+        }
+
+        if (request.getAtivo() != null) {
+            usuario.setAtivo(request.getAtivo());
+        }
+
+        usuario.setAtualizadoEm(LocalDateTime.now());
+
+        ClienteModel atualizado = clienteRepository.save(model);
+
+        return Optional.of(ClienteResponse.fromModel(atualizado));
     }
+
 
     public Long deleteClienteById(Long id){
         Optional<ClienteModel> verificarModel = clienteRepository.findById(id);

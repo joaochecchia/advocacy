@@ -20,4 +20,20 @@ public class ControllerExceptions {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(PasswordDontMatchException.class)
+    public ResponseEntity<Map<String, String>> passwordDontMatch(PasswordDontMatchException ex){
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NullFieldException.class)
+    public ResponseEntity<Map<String, String>> nullField(NullFieldException ex){
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

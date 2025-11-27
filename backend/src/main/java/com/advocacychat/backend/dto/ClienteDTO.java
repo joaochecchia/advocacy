@@ -6,9 +6,16 @@ import java.time.LocalDateTime;
 
 @Data
 public class ClienteDTO {
-    private Long id;
-    private Long usuarioId;
+    private Long idUsuario;
+    private String nome;
+    private String email;
+    private String tipoUsuario;
+    private Boolean ativo;
+    private LocalDateTime criadoEmUsuario;
+    private LocalDateTime atualizadoEmUsuario;
+    private Long idCliente;
     private String cpf;
     private String telefone;
-    LocalDateTime criadoEm;
+    private LocalDateTime criadoEmCliente;
 }
+
