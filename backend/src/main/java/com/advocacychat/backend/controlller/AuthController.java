@@ -1,7 +1,9 @@
 package com.advocacychat.backend.controlller;
 
 import com.advocacychat.backend.config.TokenConfig;
-import com.advocacychat.backend.mapper.UsuarioMapper;
+import com.advocacychat.backend.enums.TipoUsuario;
+import com.advocacychat.backend.model.AdvogadoModel;
+import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.request.LoginRequest;
 import com.advocacychat.backend.request.UsuarioRequest;
@@ -15,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -24,21 +28,23 @@ public class AuthController {
 
     private final UsuarioService userService;
 
-    private final UsuarioMapper usuarioMapper;
-
     private final AuthenticationManager authenticationManager;
 
     private final TokenConfig tokenConfig;
 
     @PostMapping("/register")
-    public ResponseEntity<UsuarioResponse> register(@RequestBody UsuarioRequest request){
+    public ResponseEntity<Map<String, Object>> register(@RequestBody UsuarioRequest request){
         Optional<UsuarioResponse> newUser = userService.registerUser(request);
 
-        return ResponseEntity.ok(newUser.get());
+        Map<String, Object> response = new HashMap<>();
+        response.put("Message", "Usuario registrado com sucesso.");
+        response.put("Body", newUser.get());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login (@RequestBody LoginRequest request){
+    public ResponseEntity<Map<String, Object>> login (@RequestBody LoginRequest request){
         UsernamePasswordAuthenticationToken userAndPass = new UsernamePasswordAuthenticationToken(request.email(), request.senha());
         Authentication authentication = authenticationManager.authenticate(userAndPass);
 
@@ -46,13 +52,17 @@ public class AuthController {
 
         String token = tokenConfig.gerarToken(usuario);
 
-        System.out.println("TOKEN: " + token);
-
-        return ResponseEntity.ok(new LoginResponse(
+        Map<String, Object> response = new HashMap<>();
+        response.put("Message", "Usuario logado com sucesso.");
+        response.put("Body", new LoginResponse(
+                usuario.getId(),
                 usuario.getEmail(),
-                usuario.getPassword(),
                 token
         ));
+
+        System.out.println("TOKEN: " + token);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/teste")

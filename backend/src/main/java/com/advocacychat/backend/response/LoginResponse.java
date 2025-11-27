@@ -1,4 +1,5 @@
 package com.advocacychat.backend.response;
 
-public record LoginResponse(String id, String email, String token) {
-}
+public record LoginResponse(Long id,
+                            String email,
+                            String token) { }

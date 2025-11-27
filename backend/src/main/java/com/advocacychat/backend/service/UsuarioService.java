@@ -1,5 +1,7 @@
 package com.advocacychat.backend.service;
 
+import com.advocacychat.backend.dto.UsuarioDTO;
+import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
 import com.advocacychat.backend.mapper.UsuarioMapper;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.repository.UsuarioRepository;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service

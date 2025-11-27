@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClienteMapper {
 
-    public static ClienteDTO modelToDto(ClienteModel model) {
+    public ClienteDTO modelToDto(ClienteModel model) {
         if (model == null) return null;
 
         ClienteDTO dto = new ClienteDTO();
@@ -23,7 +23,7 @@ public class ClienteMapper {
         return dto;
     }
 
-    public static ClienteModel dtoToModel(ClienteDTO dto) {
+    public ClienteModel dtoToModel(ClienteDTO dto) {
         if (dto == null) return null;
 
         ClienteModel model = new ClienteModel();
