@@ -26,7 +26,7 @@ public class ClienteService {
         Optional<ClienteModel> model = clienteRepository.findByUsuarioModel_Id(id);
 
         if(model.isEmpty()){
-            throw new NotFindObjectByIdentifierException("Usuario com id " + id + " nao existe.");
+            throw new NotFindObjectByIdentifierException("Cliente com id " + id + " nao existe.");
         }
 
         return Optional.of(ClienteResponse.fromModel(model.get()));
