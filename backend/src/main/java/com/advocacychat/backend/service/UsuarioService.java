@@ -1,8 +1,11 @@
 package com.advocacychat.backend.service;
 
+import com.advocacychat.backend.dto.ChatDTO;
+import com.advocacychat.backend.enums.TipoUsuario;
 import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
 import com.advocacychat.backend.exceptions.NullFieldException;
 import com.advocacychat.backend.exceptions.PasswordDontMatchException;
+import com.advocacychat.backend.mapper.ChatMapper;
 import com.advocacychat.backend.mapper.UsuarioMapper;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.repository.UsuarioRepository;
@@ -13,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -23,6 +27,8 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
+    private final ChatService chatService;
+
     private final PasswordEncoder passwordEncoder;
 
     public Optional<UsuarioResponse> registerUser(UsuarioRequest request) {
@@ -30,6 +36,15 @@ public class UsuarioService {
         usuarioModel.setSenhaHash(passwordEncoder.encode(usuarioModel.getSenhaHash()));
 
         UsuarioModel novoUsuario = usuarioRepository.save(usuarioModel);
+
+        if(novoUsuario.getTipoUsuario().equals(TipoUsuario.CLIENTE)){
+
+            ChatDTO chatDTO = new ChatDTO();
+            chatDTO.setClienteId(novoUsuario.getId());
+            chatDTO.setAtivo(true);
+
+            chatService.registerUser(chatDTO);
+        }
 
         return Optional.of(
                 UsuarioResponse.builder()

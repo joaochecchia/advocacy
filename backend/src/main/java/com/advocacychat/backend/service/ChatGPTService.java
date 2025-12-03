@@ -29,8 +29,7 @@ public class ChatGPTService {
                 List.of(
                         new ChatGptMessageRequest(
                                 "system",
-                                "Você é um assistente jurídico especializado em direito brasileiro. " +
-                                        "Explique sempre de maneira clara e cite leis quando necessário."
+                                "Você é um advogado especialista em direito trabalhista brasileiro. Quero que voce retorne as perguntas sempre por extenso."
                         ),
                         new ChatGptMessageRequest(
                                 "user",

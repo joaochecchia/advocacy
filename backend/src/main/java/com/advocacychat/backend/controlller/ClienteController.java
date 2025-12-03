@@ -1,7 +1,9 @@
 package com.advocacychat.backend.controlller;
 
+import com.advocacychat.backend.dto.ChatDTO;
 import com.advocacychat.backend.dto.ClienteDTO;
 import com.advocacychat.backend.response.ClienteResponse;
+import com.advocacychat.backend.service.ChatService;
 import com.advocacychat.backend.service.ClienteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import java.util.Optional;
 public class ClienteController {
 
     private final ClienteService clienteService;
+
+    private final ChatService chatService;
 
     @GetMapping("/getClienteByUserId/{id}")
     public ResponseEntity<Map<String, Object>> getClienteByUserId(@PathVariable Long id){
