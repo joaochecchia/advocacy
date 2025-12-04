@@ -1,4 +1,7 @@
 package com.advocacychat.backend.request;
 
-public record MessageRequest(String message) {
+import com.advocacychat.backend.dto.ClienteDTO;
+import com.advocacychat.backend.dto.UsuarioDTO;
+
+public record MessageRequest(String nomeRemetente, String message) {
 }

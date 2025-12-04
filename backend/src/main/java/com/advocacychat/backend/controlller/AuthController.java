@@ -1,9 +1,6 @@
 package com.advocacychat.backend.controlller;
 
 import com.advocacychat.backend.config.TokenConfig;
-import com.advocacychat.backend.enums.TipoUsuario;
-import com.advocacychat.backend.model.AdvogadoModel;
-import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.request.AlterarSenhaRequest;
 import com.advocacychat.backend.request.LoginRequest;
