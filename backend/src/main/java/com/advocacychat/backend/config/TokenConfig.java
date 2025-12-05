@@ -30,6 +30,7 @@ public class TokenConfig {
                 .withSubject(usuarioModel.getEmail())
                 .withClaim("usuarioId", usuarioModel.getId())
                 .withClaim("nomeUsuario", usuarioModel.getNome())
+                .withClaim("tipoUsuario", usuarioModel.getTipoUsuario().toString())
                 .withExpiresAt(Instant.now().plusSeconds(86400))
                 .withIssuedAt(Instant.now())
                 .withIssuer("API advocacyChat")
