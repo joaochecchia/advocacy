@@ -45,8 +45,8 @@ public class TokenConfig {
                     .verify(token);
 
             return Optional.of(JWTUserData.builder()
-                    .id(jwt.getClaim("userId").asLong())
-                    .name(jwt.getClaim("name").asString())
+                    .id(jwt.getClaim("usuarioId").asLong())
+                    .name(jwt.getClaim("nomeUsuario").asString())
                     .email(jwt.getSubject())
                     .build());
         } catch (JWTVerificationException ex){

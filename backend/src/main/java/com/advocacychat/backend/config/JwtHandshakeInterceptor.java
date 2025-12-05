@@ -22,7 +22,6 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             Map<String, Object> attributes) {
 
         if (!(request instanceof ServletServerHttpRequest servletRequest)) {
-            System.out.println("Handshake NÃO é HTTP — rejeitado");
             return false;
         }
 
@@ -30,14 +29,14 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         var token = servlet.getParameter("token");
 
         if (token == null || token.isBlank()) {
-            System.out.println("Token não informado no query param");
+            System.out.println("Token não informado");
             return false;
         }
 
         var jwtData = tokenConfig.verifyToken(token);
 
         if (jwtData.isEmpty()) {
-            System.out.println("❌ Token inválido");
+            System.out.println("Token inválido");
             return false;
         }
 
@@ -48,9 +47,9 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     @Override
-    public void afterHandshake(
-            ServerHttpRequest request,
-            ServerHttpResponse response,
-            WebSocketHandler wsHandler,
-            Exception exception) {}
+    public void afterHandshake(ServerHttpRequest request,
+                               ServerHttpResponse response,
+                               WebSocketHandler wsHandler,
+                               Exception exception) {}
 }
+

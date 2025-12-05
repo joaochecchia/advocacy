@@ -8,7 +8,6 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-
         #messages {
             width: 100%;
             height: 300px;
@@ -18,16 +17,10 @@
             background: #f5f5f5;
             margin-bottom: 20px;
         }
-
         input, button {
             padding: 10px;
             font-size: 16px;
         }
-
-        #nome {
-            width: 200px;
-        }
-
         #msg {
             width: 400px;
         }
@@ -39,7 +32,6 @@
 
 <div id="messages"></div>
 
-<input type="text" id="nome" placeholder="Seu nome">
 <input type="text" id="msg" placeholder="Mensagem">
 <button onclick="sendMessage()">Enviar</button>
 
@@ -52,33 +44,38 @@
 
 <script>
     let stompClient = null;
+    let userId = null; // ID extraído do token
+
+    // 👉 Função para decodificar token JWT
+    function parseJwt (token) {
+        return JSON.parse(atob(token.split('.')[1]));
+    }
 
     function connect() {
 
-        // TOKEN JWT (pode pegar do localStorage se quiser)
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpYS5zaWx2YUBleGFtcGxlLmNvbSIsInVzdWFyaW9JZCI6MSwibm9tZVVzdWFyaW8iOiJNYXJpYSBkYSBTaWx2YSIsImV4cCI6MTc2NTAzMTE0OSwiaWF0IjoxNzY0OTQ0NzQ5LCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.bIEHb7PzS_zAQOo-qX6xpG3hyNdXJaLisS3puR54oUg";
+        // ⬇️ Seu token JWT real
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2Fvby5wZXJlaXJhQGV4YW1wbGUuY29tIiwidXN1YXJpb0lkIjo0LCJub21lVXN1YXJpbyI6IkpvYW8gUGVyZWlyYSIsImV4cCI6MTc2NTA0Mjc4OCwiaWF0IjoxNzY0OTU2Mzg4LCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.aFsD9LhThEWL677tjK85OCpZpf4Mv7KxetlVd0jFKnE";
 
-        // Agora o token via QUERY PARAM (método recomendado)
+        // Extrair o ID do usuário do JWT
+        const jwt = parseJwt(token);
+        userId = jwt.usuarioId; // mesmo nome que você usa no backend
+
         const socket = new SockJS("http://localhost:8080/build-chat?token=" + token);
         stompClient = Stomp.over(socket);
 
-        stompClient.connect(
-            {}, // sem headers
-            function(frame) {
-                console.log("Conectado: " + frame);
+        stompClient.connect({}, function(frame) {
+            console.log("Conectado: " + frame);
 
-                // Se inscreve no tópico
-                stompClient.subscribe("/topics/livechat", function(msg) {
-                    showMessage(JSON.parse(msg.body).message);
-                });
+            // 🔥 Se inscrever no topic certo
+            stompClient.subscribe("/topics/chat/" + userId, function(msg) {
+                const body = JSON.parse(msg.body);
+                showMessage(body.message);
+            });
 
-                showMessage("🟢 Conectado ao servidor WebSocket...");
-            },
-            function(error) {
-                console.log("Erro ao conectar:", error);
-                showMessage("❌ Erro ao conectar: " + error);
-            }
-        );
+            showMessage("🟢 Conectado como usuário ID: " + userId);
+        }, function(error) {
+            showMessage("❌ Erro ao conectar: " + error);
+        });
     }
 
     function disconnect() {
@@ -89,19 +86,18 @@
     }
 
     function sendMessage() {
-        const nome = document.getElementById("nome").value;
         const mensagem = document.getElementById("msg").value;
 
-        if (!nome || !mensagem) {
-            alert("Preencha nome e mensagem!");
+        if (!mensagem) {
+            alert("Digite uma mensagem!");
             return;
         }
 
+        // 🔥 Agora envia APENAS message
         stompClient.send(
             "/advocacy-chat/new-message",
             {},
             JSON.stringify({
-                nomeRemetente: nome,
                 message: mensagem
             })
         );
