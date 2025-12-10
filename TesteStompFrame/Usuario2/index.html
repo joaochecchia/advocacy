@@ -2,33 +2,26 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Teste STOMP WebSocket</title>
+    <title>Advogado - Teste STOMP WebSocket</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
         #messages {
-            width: 100%;
-            height: 300px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            overflow-y: auto;
-            background: #f5f5f5;
+            width: 100%; height: 300px; border: 1px solid #ccc;
+            padding: 10px; overflow-y: auto; background: #f5f5f5;
             margin-bottom: 20px;
         }
-        input, button {
-            padding: 10px;
-            font-size: 16px;
-        }
-        #msg {
-            width: 400px;
-        }
+        input, button { padding: 10px; font-size: 16px; }
+        #msg { width: 400px; }
     </style>
 </head>
 <body>
 
-<h2>Teste WebSocket com STOMP + Spring</h2>
+<h2>Advogado - Chat com Cliente</h2>
+
+<label>ID do Cliente:</label>
+<input type="number" id="clienteId" placeholder="Ex: 4">
+
+<br><br>
 
 <div id="messages"></div>
 
@@ -44,21 +37,27 @@
 
 <script>
     let stompClient = null;
-    let userId = null; // ID extraído do token
+    let advogadoId = null;
+    let clienteTargetId = null;
 
-    // 👉 Função para decodificar token JWT
-    function parseJwt (token) {
+    function parseJwt(token) {
         return JSON.parse(atob(token.split('.')[1]));
     }
 
     function connect() {
 
-        // ⬇️ Seu token JWT real
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2Fvby5wZXJlaXJhQGV4YW1wbGUuY29tIiwidXN1YXJpb0lkIjo0LCJub21lVXN1YXJpbyI6IkpvYW8gUGVyZWlyYSIsInRpcG9Vc3VhcmlvIjoiQ0xJRU5URSIsImV4cCI6MTc2NTA2MzgyNSwiaWF0IjoxNzY0OTc3NDI1LCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.yYWBg62Eo7xhxVRNBY79-83FMEYuXZN6vwtDzlgdvW8";
+        // TOKEN DO ADVOGADO
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJjb3Muc2lsdmFAYWR2b2NhY2lhLmNvbSIsInVzdWFyaW9JZCI6NSwibm9tZVVzdWFyaW8iOiJEci4gTWFyY29zIFNpbHZhIiwidGlwb1VzdWFyaW8iOiJBRFZPR0FETyIsImV4cCI6MTc2NTQ4MTQzOSwiaWF0IjoxNzY1Mzk1MDM5LCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.1q_qYGwwzax5o6OExV4JiLVgG1YC14cZUxn-BfSvny4";
 
-        // Extrair o ID do usuário do JWT
         const jwt = parseJwt(token);
-        userId = jwt.usuarioId; // mesmo nome que você usa no backend
+        advogadoId = jwt.usuarioId;
+
+        clienteTargetId = document.getElementById("clienteId").value;
+
+        if (!clienteTargetId) {
+            alert("Digite o ID do cliente!");
+            return;
+        }
 
         const socket = new SockJS("http://localhost:8080/build-chat?token=" + token);
         stompClient = Stomp.over(socket);
@@ -66,13 +65,13 @@
         stompClient.connect({}, function(frame) {
             console.log("Conectado: " + frame);
 
-            // 🔥 Se inscrever no topic certo
-            stompClient.subscribe("/topics/chat/" + userId, function(msg) {
+            // ADVOGADO OUVE O CHAT DO CLIENTE
+            stompClient.subscribe("/topics/chat/" + clienteTargetId, function(msg) {
                 const body = JSON.parse(msg.body);
                 showMessage(body.message);
             });
 
-            showMessage("🟢 Conectado como usuário ID: " + userId);
+            showMessage("🟢 Advogado conectado ao chat do cliente ID: " + clienteTargetId);
         }, function(error) {
             showMessage("❌ Erro ao conectar: " + error);
         });
@@ -93,20 +92,20 @@
             return;
         }
 
-        // 🔥 Agora envia APENAS message
+        // ADVOGADO ENVIA PARA /new-message/{idDoCliente}
         stompClient.send(
-            "/advocacy-chat/new-message",
+            "/advocacy-chat/new-message/" + clienteTargetId,
             {},
-            JSON.stringify({
-                message: mensagem
-            })
+            JSON.stringify({ message: mensagem })
         );
+
+        document.getElementById("msg").value = "";
     }
 
     function showMessage(msg) {
-        const messagesDiv = document.getElementById("messages");
-        messagesDiv.innerHTML += msg + "<br>";
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        const div = document.getElementById("messages");
+        div.innerHTML += msg + "<br>";
+        div.scrollTop = div.scrollHeight;
     }
 </script>
 

@@ -2,33 +2,21 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Teste STOMP WebSocket</title>
+    <title>Cliente - Teste STOMP WebSocket</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
         #messages {
-            width: 100%;
-            height: 300px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            overflow-y: auto;
-            background: #f5f5f5;
+            width: 100%; height: 300px; border: 1px solid #ccc;
+            padding: 10px; overflow-y: auto; background: #f5f5f5;
             margin-bottom: 20px;
         }
-        input, button {
-            padding: 10px;
-            font-size: 16px;
-        }
-        #msg {
-            width: 400px;
-        }
+        input, button { padding: 10px; font-size: 16px; }
+        #msg { width: 400px; }
     </style>
 </head>
 <body>
 
-<h2>Teste WebSocket com STOMP + Spring</h2>
+<h2>Cliente - Chat</h2>
 
 <div id="messages"></div>
 
@@ -44,21 +32,19 @@
 
 <script>
     let stompClient = null;
-    let userId = null; // ID extraído do token
+    let userId = null;
 
-    // 👉 Função para decodificar token JWT
-    function parseJwt (token) {
+    function parseJwt(token) {
         return JSON.parse(atob(token.split('.')[1]));
     }
 
     function connect() {
 
-        // ⬇️ Seu token JWT real
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2Fvby5wZXJlaXJhQGV4YW1wbGUuY29tIiwidXN1YXJpb0lkIjo0LCJub21lVXN1YXJpbyI6IkpvYW8gUGVyZWlyYSIsImV4cCI6MTc2NTA0Mjc4OCwiaWF0IjoxNzY0OTU2Mzg4LCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.aFsD9LhThEWL677tjK85OCpZpf4Mv7KxetlVd0jFKnE";
+        // TOKEN DO CLIENTE
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2Fvby5wZXJlaXJhQGV4YW1wbGUuY29tIiwidXN1YXJpb0lkIjo0LCJub21lVXN1YXJpbyI6IkpvYW8gUGVyZWlyYSIsInRpcG9Vc3VhcmlvIjoiQ0xJRU5URSIsImV4cCI6MTc2NTQ4MTQwNiwiaWF0IjoxNzY1Mzk1MDA2LCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.SMlv7X0wyMa1gCQ4pJq1p7x323JObPHE4ild-R8yVKM";
 
-        // Extrair o ID do usuário do JWT
         const jwt = parseJwt(token);
-        userId = jwt.usuarioId; // mesmo nome que você usa no backend
+        userId = jwt.usuarioId;
 
         const socket = new SockJS("http://localhost:8080/build-chat?token=" + token);
         stompClient = Stomp.over(socket);
@@ -66,13 +52,13 @@
         stompClient.connect({}, function(frame) {
             console.log("Conectado: " + frame);
 
-            // 🔥 Se inscrever no topic certo
+            // CLIENTE OUVE APENAS O PRÓPRIO ID
             stompClient.subscribe("/topics/chat/" + userId, function(msg) {
                 const body = JSON.parse(msg.body);
                 showMessage(body.message);
             });
 
-            showMessage("🟢 Conectado como usuário ID: " + userId);
+            showMessage("🟢 Conectado como cliente ID: " + userId);
         }, function(error) {
             showMessage("❌ Erro ao conectar: " + error);
         });
@@ -93,20 +79,20 @@
             return;
         }
 
-        // 🔥 Agora envia APENAS message
+        // ENVIA PARA /new-message/{idDoCliente}
         stompClient.send(
-            "/advocacy-chat/new-message",
+            "/advocacy-chat/new-message/" + userId,
             {},
-            JSON.stringify({
-                message: mensagem
-            })
+            JSON.stringify({ message: mensagem })
         );
+
+        document.getElementById("msg").value = "";
     }
 
     function showMessage(msg) {
-        const messagesDiv = document.getElementById("messages");
-        messagesDiv.innerHTML += msg + "<br>";
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        const div = document.getElementById("messages");
+        div.innerHTML += msg + "<br>";
+        div.scrollTop = div.scrollHeight;
     }
 </script>
 

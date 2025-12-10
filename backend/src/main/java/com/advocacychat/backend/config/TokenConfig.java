@@ -49,6 +49,7 @@ public class TokenConfig {
                     .id(jwt.getClaim("usuarioId").asLong())
                     .name(jwt.getClaim("nomeUsuario").asString())
                     .email(jwt.getSubject())
+                    .tipo(jwt.getClaim("tipoUsuario").asString())
                     .build());
         } catch (JWTVerificationException ex){
             return Optional.empty();
