@@ -1,6 +1,5 @@
 package com.advocacychat.backend.response;
 
-
 import java.util.List;
 
 public record ChatGptResponse(
@@ -8,23 +7,15 @@ public record ChatGptResponse(
         String object,
         long created,
         String model,
-        List<Choice> choices,
-        Usage usage
+        List<Output> output
 ) {
-    public record Choice(
-            int index,
-            Message message,
-            String finish_reason
+
+    public record Output(
+            List<Content> content
     ) {}
 
-    public record Message(
-            String role,
-            String content
-    ) {}
-
-    public record Usage(
-            int prompt_tokens,
-            int completion_tokens,
-            int total_tokens
+    public record Content(
+            String type,
+            String text
     ) {}
 }

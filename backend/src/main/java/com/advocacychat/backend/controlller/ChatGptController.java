@@ -18,6 +18,6 @@ public class ChatGptController {
 
     @PostMapping("/ask")
     public String ask(@RequestBody MessageRequest message) {
-        return chatGPTService.ask(message.message());
+        return chatGPTService.sendMessageToChatGPT(message.message());
     }
 }

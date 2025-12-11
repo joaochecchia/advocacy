@@ -3,6 +3,7 @@ package com.advocacychat.backend.controlller;
 import com.advocacychat.backend.request.MessageRequest;
 import com.advocacychat.backend.response.JWTUserData;
 import com.advocacychat.backend.response.MessageResponse;
+import com.advocacychat.backend.service.ChatGPTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
@@ -10,7 +11,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Controller
@@ -18,6 +18,8 @@ import java.util.Map;
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
+
+    private final ChatGPTService chatGPTService;
 
     @MessageMapping("/new-message/{chatId}")
     public void newMessage(
@@ -38,6 +40,20 @@ public class ChatController {
                 "/topics/chat/" + chatId,
                 response
         );
+
+        if(request.gpt()){
+            String chatGptMessage = chatGPTService.sendMessageToChatGPT(request.message());
+
+            MessageResponse chatGptResponse = new MessageResponse(
+                    chatGptMessage
+            );
+
+            System.out.println("MENSAGEM: " + chatGptMessage);
+            messagingTemplate.convertAndSend(
+                    "/topics/chat/" + chatId,
+                    chatGptResponse
+            );
+        }
     }
 
     private void validateChatAccess(JWTUserData usuario, Long chatId) {

@@ -21,6 +21,13 @@
 <div id="messages"></div>
 
 <input type="text" id="msg" placeholder="Mensagem">
+
+<!-- 🆕 Checkbox para escolher usar ChatGPT -->
+<label style="margin-left: 10px;">
+    <input type="checkbox" id="usarGpt">
+    Perguntar ao ChatGPT
+</label>
+
 <button onclick="sendMessage()">Enviar</button>
 
 <br><br>
@@ -39,10 +46,7 @@
     }
 
     function connect() {
-
-        // TOKEN DO CLIENTE
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2Fvby5wZXJlaXJhQGV4YW1wbGUuY29tIiwidXN1YXJpb0lkIjo0LCJub21lVXN1YXJpbyI6IkpvYW8gUGVyZWlyYSIsInRpcG9Vc3VhcmlvIjoiQ0xJRU5URSIsImV4cCI6MTc2NTQ4MTQwNiwiaWF0IjoxNzY1Mzk1MDA2LCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.SMlv7X0wyMa1gCQ4pJq1p7x323JObPHE4ild-R8yVKM";
-
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2Fvby5wZXJlaXJhQGV4YW1wbGUuY29tIiwidXN1YXJpb0lkIjo0LCJub21lVXN1YXJpbyI6IkpvYW8gUGVyZWlyYSIsInRpcG9Vc3VhcmlvIjoiQ0xJRU5URSIsImV4cCI6MTc2NTU0OTEzMSwiaWF0IjoxNzY1NDYyNzMxLCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.h5-2WuTh4vpCVokXk7aWHB0kk-EY4g3clqLtNjcV1-s";
         const jwt = parseJwt(token);
         userId = jwt.usuarioId;
 
@@ -50,9 +54,6 @@
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function(frame) {
-            console.log("Conectado: " + frame);
-
-            // CLIENTE OUVE APENAS O PRÓPRIO ID
             stompClient.subscribe("/topics/chat/" + userId, function(msg) {
                 const body = JSON.parse(msg.body);
                 showMessage(body.message);
@@ -73,17 +74,20 @@
 
     function sendMessage() {
         const mensagem = document.getElementById("msg").value;
+        const usarGpt = document.getElementById("usarGpt").checked; // 🆕 pega valor do checkbox
 
         if (!mensagem) {
             alert("Digite uma mensagem!");
             return;
         }
 
-        // ENVIA PARA /new-message/{idDoCliente}
         stompClient.send(
             "/advocacy-chat/new-message/" + userId,
             {},
-            JSON.stringify({ message: mensagem })
+            JSON.stringify({
+                message: mensagem,
+                gpt: usarGpt   // 🆕 envia boolean para o backend
+            })
         );
 
         document.getElementById("msg").value = "";

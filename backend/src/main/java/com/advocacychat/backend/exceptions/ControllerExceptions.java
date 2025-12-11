@@ -36,4 +36,12 @@ public class ControllerExceptions {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UnauthorizedRoleException.class)
+    public ResponseEntity<Map<String, String>> unauthorizedRole(UnauthorizedRoleException ex){
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

@@ -17,35 +17,41 @@ public class ChatGPTService {
     @Value("${openai.api.key}")
     private String apiKey;
 
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("https://api.openai.com/v1/chat/completions")
-            .defaultHeader("Content-Type", "application/json")
-            .build();
+    private final WebClient.Builder webClientBuilder;
 
-    public String ask(String userMessage) {
+    private static final String SYSTEM_PROMPT =
+            "Você é um assistente especializado em leis trabalhistas brasileiras. " +
+                    "Responda sempre em texto corrido, de forma direta, clara e sucinta.";
+
+    public String sendMessageToChatGPT(String message) {
+
+        WebClient client = webClientBuilder.build();
 
         ChatGptRequest request = new ChatGptRequest(
-                "gpt-4.1",
+                "gpt-4.1-mini",
                 List.of(
-                        new ChatGptMessageRequest(
-                                "system",
-                                "Você é um advogado especialista em direito trabalhista brasileiro. Quero que voce retorne as perguntas sempre por extenso."
-                        ),
-                        new ChatGptMessageRequest(
-                                "user",
-                                userMessage
-                        )
+                        new ChatGptMessageRequest("system", SYSTEM_PROMPT),
+                        new ChatGptMessageRequest("user", message)
                 )
         );
 
-        ChatGptResponse response = webClient.post()
+        ChatGptResponse response = client.post()
+                .uri("https://api.openai.com/v1/responses")
                 .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(ChatGptResponse.class)
                 .block();
 
-        return response.choices().get(0).message().content();
+        if (response == null || response.output() == null) {
+            return "Nenhuma resposta recebida da OpenAI.";
+        }
+
+        return response.output()
+                .get(0)
+                .content()
+                .get(0)
+                .text();
     }
 }
-
