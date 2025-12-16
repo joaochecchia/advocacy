@@ -37,7 +37,7 @@ public class UsuarioService {
 
         if(novoUsuario.getTipoUsuario().equals(TipoUsuario.CLIENTE)){
             ChatDTO chatDTO = new ChatDTO();
-            chatDTO.setClienteId(novoUsuario.getId());
+            chatDTO.setClienteId(novoUsuario.getCliente().getId());
             chatDTO.setAtivo(true);
 
             chatService.registerChat(chatDTO);
