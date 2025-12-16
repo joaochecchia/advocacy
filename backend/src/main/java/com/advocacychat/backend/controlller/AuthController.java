@@ -8,6 +8,7 @@ import com.advocacychat.backend.request.UsuarioRequest;
 import com.advocacychat.backend.response.LoginResponse;
 import com.advocacychat.backend.response.UsuarioResponse;
 import com.advocacychat.backend.service.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +32,7 @@ public class AuthController {
     private final TokenConfig tokenConfig;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody UsuarioRequest request){
+    public ResponseEntity<Map<String, Object>> register(@RequestBody @Valid UsuarioRequest request){
         Optional<UsuarioResponse> newUser = userService.registerUser(request);
 
         Map<String, Object> response = new HashMap<>();
