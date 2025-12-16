@@ -1,6 +1,5 @@
 package com.advocacychat.backend.controlller;
 
-import com.advocacychat.backend.dto.ChatDTO;
 import com.advocacychat.backend.dto.ClienteDTO;
 import com.advocacychat.backend.response.ClienteResponse;
 import com.advocacychat.backend.service.ChatService;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MensagemMapper {
 
-    public static MensagemDTO modelToDto(MensagemModel model) {
+    public MensagemDTO modelToDto(MensagemModel model) {
         if (model == null) return null;
 
         MensagemDTO dto = new MensagemDTO();
@@ -21,7 +21,7 @@ public class MensagemMapper {
         return dto;
     }
 
-    public static MensagemModel dtoToModel(MensagemDTO dto) {
+    public MensagemModel dtoToModel(MensagemDTO dto) {
         if (dto == null) return null;
 
         MensagemModel model = new MensagemModel();

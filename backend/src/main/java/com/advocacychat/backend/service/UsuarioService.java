@@ -40,7 +40,7 @@ public class UsuarioService {
             chatDTO.setClienteId(novoUsuario.getId());
             chatDTO.setAtivo(true);
 
-            chatService.registerUser(chatDTO);
+            chatService.registerChat(chatDTO);
         }
 
         return Optional.of(

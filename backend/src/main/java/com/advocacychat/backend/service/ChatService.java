@@ -3,10 +3,7 @@ package com.advocacychat.backend.service;
 import com.advocacychat.backend.dto.ChatDTO;
 import com.advocacychat.backend.mapper.ChatMapper;
 import com.advocacychat.backend.model.ChatModel;
-import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.repository.ChatRepository;
-import com.advocacychat.backend.request.UsuarioRequest;
-import com.advocacychat.backend.response.UsuarioResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +17,7 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
 
-    public Optional<ChatDTO> registerUser(ChatDTO request) {
+    public Optional<ChatDTO> registerChat(ChatDTO request) {
         ChatModel chatModel = chatMapper.dtoToModel(request);
 
         ChatModel novoUsuario = chatRepository.save(chatModel);
