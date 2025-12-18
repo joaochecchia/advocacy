@@ -33,8 +33,6 @@ public class ChatController {
 
         JWTUserData usuario = (JWTUserData) sessionAttrs.get("user");
 
-        validateChatAccess(usuario, chatId);
-
         MessageResponse response = new MessageResponse(
                 request.message()
         );

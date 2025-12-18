@@ -1,4 +1,4 @@
 package com.advocacychat.backend.request;
 
-public record MessageRequest(String message, boolean gpt) {
+public record MessageRequest(String message, Long chatId, boolean gpt) {
 }
