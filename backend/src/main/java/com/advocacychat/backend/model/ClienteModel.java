@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "cliente")
@@ -19,6 +20,9 @@ public class ClienteModel {
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private UsuarioModel usuarioModel;
+
+    @OneToMany(mappedBy = "clienteModel", cascade = CascadeType.ALL)
+    private List<ChatModel> chats;
 
     @Column(length = 11, nullable = false, unique = true)
     private String cpf;

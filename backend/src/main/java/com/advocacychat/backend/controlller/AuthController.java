@@ -48,6 +48,7 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(userAndPass);
 
         UsuarioModel usuario = (UsuarioModel) authentication.getPrincipal();
+        //System.out.println("OI: " + usuario.);
 
         String token = tokenConfig.gerarToken(usuario);
 

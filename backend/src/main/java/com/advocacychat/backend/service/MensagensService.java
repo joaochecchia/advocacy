@@ -20,7 +20,7 @@ public class MensagensService {
 
     private final MensagensRepository mensagensRepository;
 
-    public Optional<MensagemDTO> registerChat(MensagemDTO request) {
+    public Optional<MensagemDTO> registrarMensagem(MensagemDTO request) {
         MensagemModel mensagemModel = mensagemMapper.dtoToModel(request);
 
         MensagemModel novaMensagem= mensagensRepository.save(mensagemModel);
@@ -28,7 +28,7 @@ public class MensagensService {
         return Optional.of(mensagemMapper.modelToDto(novaMensagem));
     }
 
-    public Optional<List<MensagemDTO>> getMensagensByChatId(Long chatId){
+    public Optional<List<MensagemDTO>> buscarMensagensPorChatId(Long chatId){
         Optional<List<MensagemModel>> mensagens = mensagensRepository.findAllByChatModel_Id(chatId);
 
         return Optional.of(mensagens.get().stream()

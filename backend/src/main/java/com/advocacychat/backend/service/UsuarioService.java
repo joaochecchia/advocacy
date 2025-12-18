@@ -6,6 +6,8 @@ import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
 import com.advocacychat.backend.exceptions.NullFieldException;
 import com.advocacychat.backend.exceptions.PasswordDontMatchException;
 import com.advocacychat.backend.mapper.UsuarioMapper;
+import com.advocacychat.backend.model.ChatModel;
+import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.repository.UsuarioRepository;
 import com.advocacychat.backend.request.AlterarSenhaRequest;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,15 +37,23 @@ public class UsuarioService {
         UsuarioModel usuarioModel = usuarioMapper.requestToModel(request);
         usuarioModel.setSenhaHash(passwordEncoder.encode(usuarioModel.getSenhaHash()));
 
-        UsuarioModel novoUsuario = usuarioRepository.save(usuarioModel);
+        if (request.tipoUsuario() == TipoUsuario.CLIENTE) {
 
-        if(novoUsuario.getTipoUsuario().equals(TipoUsuario.CLIENTE)){
-            ChatDTO chatDTO = new ChatDTO();
-            chatDTO.setClienteId(novoUsuario.getCliente().getId());
-            chatDTO.setAtivo(true);
+            ClienteModel cliente = usuarioModel.getCliente();
 
-            chatService.registerChat(chatDTO);
+            if (cliente == null) {
+                throw new NullFieldException("Cliente não foi criado pelo mapper");
+            }
+
+            ChatModel chat = new ChatModel();
+            chat.setClienteModel(cliente);
+
+            List<ChatModel> chats = new ArrayList<>();
+            chats.add(chat);
+            cliente.setChats(chats);
         }
+
+        UsuarioModel novoUsuario = usuarioRepository.save(usuarioModel);
 
         return Optional.of(
                 UsuarioResponse.builder()

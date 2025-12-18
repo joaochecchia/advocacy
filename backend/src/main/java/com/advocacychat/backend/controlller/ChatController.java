@@ -1,9 +1,12 @@
 package com.advocacychat.backend.controlller;
 
+import com.advocacychat.backend.dto.MensagemDTO;
+import com.advocacychat.backend.enums.OrigemMensagem;
 import com.advocacychat.backend.request.MessageRequest;
 import com.advocacychat.backend.response.JWTUserData;
 import com.advocacychat.backend.response.MessageResponse;
 import com.advocacychat.backend.service.ChatGPTService;
+import com.advocacychat.backend.service.MensagensService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
@@ -11,6 +14,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Controller
@@ -20,6 +24,8 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
 
     private final ChatGPTService chatGPTService;
+
+    private final MensagensService mensagensService;
 
     @MessageMapping("/new-message/{chatId}")
     public void newMessage(
@@ -36,6 +42,18 @@ public class ChatController {
                 request.message()
         );
 
+         /**mensagensService.registrarMensagem(
+                new MensagemDTO(
+
+                )
+        );
+
+        private Long chatId;
+        private Long remetenteId;
+        private String conteudo;
+        private OrigemMensagem origem;
+        private LocalDateTime criadoEm;**/
+
         messagingTemplate.convertAndSend(
                 "/topics/chat/" + chatId,
                 response
@@ -48,7 +66,6 @@ public class ChatController {
                     chatGptMessage
             );
 
-            System.out.println("MENSAGEM: " + chatGptMessage);
             messagingTemplate.convertAndSend(
                     "/topics/chat/" + chatId,
                     chatGptResponse

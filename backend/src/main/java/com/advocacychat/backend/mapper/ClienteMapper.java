@@ -1,10 +1,19 @@
 package com.advocacychat.backend.mapper;
 
 import com.advocacychat.backend.dto.ClienteDTO;
+import com.advocacychat.backend.model.AdvogadoModel;
+import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.enums.TipoUsuario;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ClienteMapper {
@@ -19,12 +28,25 @@ public class ClienteMapper {
         dto.setTelefone(model.getTelefone());
         dto.setCriadoEmCliente(model.getCriadoEm());
 
+        if (model.getChats() != null && !model.getChats().isEmpty()) {
+            dto.setIdChat(
+                    model.getChats()
+                            .stream()
+                            .map(ChatModel::getId)
+                            .toList()
+            );
+        }
+
         UsuarioModel usuario = model.getUsuarioModel();
         if (usuario != null) {
             dto.setIdUsuario(usuario.getId());
             dto.setNome(usuario.getNome());
             dto.setEmail(usuario.getEmail());
-            dto.setTipoUsuario(usuario.getTipoUsuario() != null ? usuario.getTipoUsuario().name() : null);
+            dto.setTipoUsuario(
+                    usuario.getTipoUsuario() != null
+                            ? usuario.getTipoUsuario().name()
+                            : null
+            );
             dto.setAtivo(usuario.getAtivo());
             dto.setCriadoEmUsuario(usuario.getCriadoEm());
             dto.setAtualizadoEmUsuario(usuario.getAtualizadoEm());
@@ -43,13 +65,14 @@ public class ClienteMapper {
         model.setTelefone(dto.getTelefone());
         model.setCriadoEm(dto.getCriadoEmCliente());
 
-        boolean hasUsuarioData = dto.getIdUsuario() != null
-                || dto.getNome() != null
-                || dto.getEmail() != null
-                || dto.getTipoUsuario() != null
-                || dto.getAtivo() != null
-                || dto.getCriadoEmUsuario() != null
-                || dto.getAtualizadoEmUsuario() != null;
+        boolean hasUsuarioData =
+                dto.getIdUsuario() != null ||
+                        dto.getNome() != null ||
+                        dto.getEmail() != null ||
+                        dto.getTipoUsuario() != null ||
+                        dto.getAtivo() != null ||
+                        dto.getCriadoEmUsuario() != null ||
+                        dto.getAtualizadoEmUsuario() != null;
 
         if (hasUsuarioData) {
             UsuarioModel usuario = new UsuarioModel();
@@ -62,7 +85,7 @@ public class ClienteMapper {
             if (dto.getTipoUsuario() != null) {
                 try {
                     usuario.setTipoUsuario(TipoUsuario.valueOf(dto.getTipoUsuario()));
-                } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException ignored) {
                     usuario.setTipoUsuario(null);
                 }
             }
@@ -70,7 +93,6 @@ public class ClienteMapper {
             usuario.setCriadoEm(dto.getCriadoEmUsuario());
             usuario.setAtualizadoEm(dto.getAtualizadoEmUsuario());
 
-            usuario.setCliente(model);
             model.setUsuarioModel(usuario);
         }
 

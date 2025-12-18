@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class ClienteDTO {
@@ -16,6 +17,7 @@ public class ClienteDTO {
     private LocalDateTime criadoEmUsuario;
     private LocalDateTime atualizadoEmUsuario;
     private Long idCliente;
+    private List<Long> idChat;
 
     @NotBlank
     @Size(min = 11, max = 11)
