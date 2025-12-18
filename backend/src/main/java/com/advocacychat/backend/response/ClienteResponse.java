@@ -1,8 +1,10 @@
 package com.advocacychat.backend.response;
 
+import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.ClienteModel;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record ClienteResponse(
         Long idUsuario,
@@ -16,7 +18,9 @@ public record ClienteResponse(
         Long idCliente,
         String cpf,
         String telefone,
-        LocalDateTime criadoEmCliente
+        LocalDateTime criadoEmCliente,
+
+        List<Long> chatIds
 ) {
     public static ClienteResponse fromModel(ClienteModel cliente) {
         return new ClienteResponse(
@@ -31,7 +35,12 @@ public record ClienteResponse(
                 cliente.getId(),
                 cliente.getCpf(),
                 cliente.getTelefone(),
-                cliente.getCriadoEm()
+                cliente.getCriadoEm(),
+
+                cliente.getChats()
+                        .stream()
+                        .map(ChatModel::getId)
+                        .toList()
         );
     }
 }
