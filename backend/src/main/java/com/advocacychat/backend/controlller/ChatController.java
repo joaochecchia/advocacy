@@ -1,7 +1,5 @@
 package com.advocacychat.backend.controlller;
 
-import com.advocacychat.backend.dto.MensagemDTO;
-import com.advocacychat.backend.enums.OrigemMensagem;
 import com.advocacychat.backend.request.MessageRequest;
 import com.advocacychat.backend.response.JWTUserData;
 import com.advocacychat.backend.response.MessageResponse;
@@ -14,7 +12,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Controller

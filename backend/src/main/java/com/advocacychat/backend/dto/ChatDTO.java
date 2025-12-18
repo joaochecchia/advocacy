@@ -1,6 +1,5 @@
 package com.advocacychat.backend.dto;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;

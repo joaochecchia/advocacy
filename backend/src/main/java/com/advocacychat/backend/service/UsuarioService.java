@@ -1,6 +1,5 @@
 package com.advocacychat.backend.service;
 
-import com.advocacychat.backend.dto.ChatDTO;
 import com.advocacychat.backend.enums.TipoUsuario;
 import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
 import com.advocacychat.backend.exceptions.NullFieldException;

@@ -1,6 +1,5 @@
 package com.advocacychat.backend.controlller;
 
-import com.advocacychat.backend.request.ChatGptMessageRequest;
 import com.advocacychat.backend.request.MessageRequest;
 import com.advocacychat.backend.service.ChatGPTService;
 import lombok.RequiredArgsConstructor;

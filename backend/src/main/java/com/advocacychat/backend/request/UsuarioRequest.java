@@ -3,7 +3,6 @@ package com.advocacychat.backend.request;
 import com.advocacychat.backend.dto.AdvogadoDTO;
 import com.advocacychat.backend.dto.ClienteDTO;
 import com.advocacychat.backend.enums.TipoUsuario;
-import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

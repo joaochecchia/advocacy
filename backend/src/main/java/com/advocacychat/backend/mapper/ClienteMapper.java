@@ -1,19 +1,11 @@
 package com.advocacychat.backend.mapper;
 
 import com.advocacychat.backend.dto.ClienteDTO;
-import com.advocacychat.backend.model.AdvogadoModel;
 import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.enums.TipoUsuario;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class ClienteMapper {
@@ -63,7 +55,6 @@ public class ClienteMapper {
         model.setId(dto.getIdCliente());
         model.setCpf(dto.getCpf());
         model.setTelefone(dto.getTelefone());
-        model.setCriadoEm(dto.getCriadoEmCliente());
 
         boolean hasUsuarioData =
                 dto.getIdUsuario() != null ||

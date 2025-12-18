@@ -3,7 +3,6 @@ package com.advocacychat.backend.mapper;
 import com.advocacychat.backend.dto.NoticiaDTO;
 import com.advocacychat.backend.model.NoticiaModel;
 import com.advocacychat.backend.model.UsuarioModel;
-import jdk.jfr.Category;
 import org.springframework.stereotype.Component;
 
 @Component
