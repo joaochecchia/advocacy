@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatRepository extends JpaRepository<ChatModel, Long> {
+    boolean existsByIdAndClienteModel_UsuarioModel_Id(Long chatId, Long usuarioId);
 }

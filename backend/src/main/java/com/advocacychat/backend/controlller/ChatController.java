@@ -4,6 +4,7 @@ import com.advocacychat.backend.request.MessageRequest;
 import com.advocacychat.backend.response.JWTUserData;
 import com.advocacychat.backend.response.MessageResponse;
 import com.advocacychat.backend.service.ChatGPTService;
+import com.advocacychat.backend.service.ChatService;
 import com.advocacychat.backend.service.MensagensService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -22,6 +23,8 @@ public class ChatController {
 
     private final ChatGPTService chatGPTService;
 
+    private final ChatService chatService;
+
     private final MensagensService mensagensService;
 
     @MessageMapping("/new-message/{chatId}")
@@ -32,6 +35,8 @@ public class ChatController {
     ) {
 
         JWTUserData usuario = (JWTUserData) sessionAttrs.get("user");
+
+        chatService.validateChatAccess(usuario, chatId);
 
         MessageResponse response = new MessageResponse(
                 request.message()
@@ -66,21 +71,5 @@ public class ChatController {
                     chatGptResponse
             );
         }
-    }
-
-    private void validateChatAccess(JWTUserData usuario, Long chatId) {
-
-        if (usuario.tipo().equals("CLIENTE")) {
-            if (!usuario.id().equals(chatId)) {
-                throw new RuntimeException("Cliente não autorizado a acessar outro chat");
-            }
-            return;
-        }
-
-        if (usuario.tipo().equals("ADVOGADO")) {
-            return;
-        }
-
-        throw new RuntimeException("Tipo de usuário não autorizado");
     }
 }
