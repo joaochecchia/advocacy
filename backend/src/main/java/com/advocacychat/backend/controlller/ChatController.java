@@ -1,5 +1,7 @@
 package com.advocacychat.backend.controlller;
 
+import com.advocacychat.backend.dto.MensagemDTO;
+import com.advocacychat.backend.enums.OrigemMensagem;
 import com.advocacychat.backend.request.MessageRequest;
 import com.advocacychat.backend.response.JWTUserData;
 import com.advocacychat.backend.response.MessageResponse;
@@ -13,6 +15,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Controller
@@ -42,17 +45,18 @@ public class ChatController {
                 request.message()
         );
 
-         /**mensagensService.registrarMensagem(
-                new MensagemDTO(
+        MensagemDTO mensagemDTO = new MensagemDTO();
+        mensagemDTO.setChatId(chatId);
+        mensagemDTO.setRemetenteId(usuario.id());
+        mensagemDTO.setConteudo(request.message());
 
-                )
-        );
+        if(usuario.tipo().equals("CLIENTE")) mensagemDTO.setOrigem(OrigemMensagem.CLIENTE);
 
-        private Long chatId;
-        private Long remetenteId;
-        private String conteudo;
-        private OrigemMensagem origem;
-        private LocalDateTime criadoEm;**/
+        if(usuario.tipo().equals("ADVOGADO")) mensagemDTO.setOrigem(OrigemMensagem.ADVOGADO);
+
+        mensagemDTO.setCriadoEm(LocalDateTime.now());
+
+        mensagensService.registrarMensagem(mensagemDTO);
 
         messagingTemplate.convertAndSend(
                 "/topics/chat/" + chatId,
@@ -65,6 +69,16 @@ public class ChatController {
             MessageResponse chatGptResponse = new MessageResponse(
                     chatGptMessage
             );
+
+            MensagemDTO gptMensagemDTO = new MensagemDTO();
+            gptMensagemDTO.setChatId(chatId);
+            //deppois tirar remetente nao nulo
+            gptMensagemDTO.setRemetenteId(usuario.id());
+            gptMensagemDTO.setConteudo(chatGptMessage);
+            gptMensagemDTO.setOrigem(OrigemMensagem.GPT);
+            gptMensagemDTO.setCriadoEm(LocalDateTime.now());
+
+            mensagensService.registrarMensagem(gptMensagemDTO);
 
             messagingTemplate.convertAndSend(
                     "/topics/chat/" + chatId,
