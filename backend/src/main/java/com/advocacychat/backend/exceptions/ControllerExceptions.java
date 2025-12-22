@@ -38,6 +38,16 @@ public class ControllerExceptions {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<Map<String, Object>> handleBusinessRuleException(BusinessRuleException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", ex.getStatus().value());
+        response.put("error", ex.getMessage());
+
+        return ResponseEntity.status(ex.getStatus()).body(response);
+    }
+
     @ExceptionHandler(UnauthorizedRoleException.class)
     public ResponseEntity<Map<String, String>> unauthorizedRole(UnauthorizedRoleException ex){
         Map<String, String> response = new HashMap<>();

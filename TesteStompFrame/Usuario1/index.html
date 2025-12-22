@@ -3,15 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Cliente - Teste STOMP WebSocket</title>
+
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
         #messages {
-            width: 100%; height: 300px; border: 1px solid #ccc;
-            padding: 10px; overflow-y: auto; background: #f5f5f5;
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f5f5f5;
             margin-bottom: 20px;
         }
-        input, button { padding: 10px; font-size: 16px; }
-        #msg { width: 400px; }
+
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        #msg {
+            width: 400px;
+        }
     </style>
 </head>
 <body>
@@ -22,7 +38,6 @@
 
 <input type="text" id="msg" placeholder="Mensagem">
 
-<!-- 🆕 Checkbox para escolher usar ChatGPT -->
 <label style="margin-left: 10px;">
     <input type="checkbox" id="usarGpt">
     Perguntar ao ChatGPT
@@ -31,6 +46,7 @@
 <button onclick="sendMessage()">Enviar</button>
 
 <br><br>
+
 <button onclick="connect()">Conectar</button>
 <button onclick="disconnect()">Desconectar</button>
 
@@ -40,29 +56,78 @@
 <script>
     let stompClient = null;
     let userId = null;
+    let chatId = null;
+
+    const API_BASE = "http://localhost:8080";
 
     function parseJwt(token) {
         return JSON.parse(atob(token.split('.')[1]));
     }
 
-    function connect() {
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2Fvby5wZXJlaXJhQGV4YW1wbGUuY29tIiwidXN1YXJpb0lkIjo0LCJub21lVXN1YXJpbyI6IkpvYW8gUGVyZWlyYSIsInRpcG9Vc3VhcmlvIjoiQ0xJRU5URSIsImV4cCI6MTc2NTkwMzYwNCwiaWF0IjoxNzY1ODE3MjA0LCJpc3MiOiJBUEkgYWR2b2NhY3lDaGF0In0.94-6pLhP-oJsnowL5_FSDsyiw2loWW7BKf6rh6u6-H4";
+    function showMessage(msg) {
+        const div = document.getElementById("messages");
+        div.innerHTML += msg + "<br>";
+        div.scrollTop = div.scrollHeight;
+    }
+
+    // 🔹 BUSCA CLIENTE ANTES DO WEBSOCKET
+    async function carregarCliente(token) {
         const jwt = parseJwt(token);
         userId = jwt.usuarioId;
 
-        const socket = new SockJS("http://localhost:8080/build-chat?token=" + token);
-        stompClient = Stomp.over(socket);
+        const response = await fetch(
+            `${API_BASE}/cliente/getClienteByUserId/${userId}`,
+            {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
 
-        stompClient.connect({}, function(frame) {
-            stompClient.subscribe("/topics/chat/" + userId, function(msg) {
-                const body = JSON.parse(msg.body);
-                showMessage(body.message);
+        if (!response.ok) {
+            throw new Error("Erro ao buscar cliente");
+        }
+
+        const data = await response.json();
+
+        if (!data.Body.chatIds || data.Body.chatIds.length === 0) {
+            throw new Error("Cliente não possui chats");
+        }
+
+        chatId = data.Body.chatIds[0];
+
+        showMessage("✅ Cliente carregado | Chat ID: " + chatId);
+    }
+
+    // 🔹 CONECTA NO WEBSOCKET APÓS BUSCAR O CLIENTE
+    async function connect() {
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJub3ZvZW1haWwyM0BnbWFpbC5jb20iLCJ1c3VhcmlvSWQiOjEzLCJub21lVXN1YXJpbyI6Ik5PVk9VU1VBUklPMjMiLCJ0aXBvVXN1YXJpbyI6IkNMSUVOVEUiLCJleHAiOjE3NjYxNjEyMDgsImlhdCI6MTc2NjA3NDgwOCwiaXNzIjoiQVBJIGFkdm9jYWN5Q2hhdCJ9.YRWyL1hHXzXJEij70H4fNKM4aanu5v_9dpiHovo42ZI";
+
+        try {
+            await carregarCliente(token);
+
+            const socket = new SockJS(
+                `${API_BASE}/build-chat?token=${token}`
+            );
+
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+
+                stompClient.subscribe(`/topics/chat/${chatId}`, function(msg) {
+                    const body = JSON.parse(msg.body);
+                    showMessage(body.message);
+                });
+
+                showMessage("🟢 Conectado no chat " + chatId);
+
+            }, function(error) {
+                showMessage("❌ Erro no websocket: " + error);
             });
 
-            showMessage("🟢 Conectado como cliente ID: " + userId);
-        }, function(error) {
-            showMessage("❌ Erro ao conectar: " + error);
-        });
+        } catch (e) {
+            showMessage("❌ " + e.message);
+        }
     }
 
     function disconnect() {
@@ -72,9 +137,15 @@
         }
     }
 
+    // 🔹 ENVIA MESSAGE REQUEST (COMPATÍVEL COM BACKEND)
     function sendMessage() {
+        if (!stompClient || !chatId) {
+            alert("Conecte-se primeiro!");
+            return;
+        }
+
         const mensagem = document.getElementById("msg").value;
-        const usarGpt = document.getElementById("usarGpt").checked; // 🆕 pega valor do checkbox
+        const usarGpt = document.getElementById("usarGpt").checked;
 
         if (!mensagem) {
             alert("Digite uma mensagem!");
@@ -82,21 +153,17 @@
         }
 
         stompClient.send(
-            "/advocacy-chat/new-message/" + userId,
+            `/advocacy-chat/new-message/${chatId}`,
             {},
             JSON.stringify({
                 message: mensagem,
-                gpt: usarGpt   // 🆕 envia boolean para o backend
+                chatId: chatId,
+                gpt: usarGpt
             })
         );
 
-        document.getElementById("msg").value = "";
-    }
 
-    function showMessage(msg) {
-        const div = document.getElementById("messages");
-        div.innerHTML += msg + "<br>";
-        div.scrollTop = div.scrollHeight;
+        document.getElementById("msg").value = "";
     }
 </script>
 

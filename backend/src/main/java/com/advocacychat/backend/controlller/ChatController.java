@@ -22,13 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatController {
 
-    private final SimpMessagingTemplate messagingTemplate;
-
-    private final ChatGPTService chatGPTService;
-
     private final ChatService chatService;
-
-    private final MensagensService mensagensService;
 
     @MessageMapping("/new-message/{chatId}")
     public void newMessage(
@@ -39,51 +33,10 @@ public class ChatController {
 
         JWTUserData usuario = (JWTUserData) sessionAttrs.get("user");
 
-        chatService.validateChatAccess(usuario, chatId);
-
-        MessageResponse response = new MessageResponse(
-                request.message()
+        chatService.processarNovaMensagem(
+                chatId,
+                usuario,
+                request
         );
-
-        MensagemDTO mensagemDTO = new MensagemDTO();
-        mensagemDTO.setChatId(chatId);
-        mensagemDTO.setRemetenteId(usuario.id());
-        mensagemDTO.setConteudo(request.message());
-
-        if(usuario.tipo().equals("CLIENTE")) mensagemDTO.setOrigem(OrigemMensagem.CLIENTE);
-
-        if(usuario.tipo().equals("ADVOGADO")) mensagemDTO.setOrigem(OrigemMensagem.ADVOGADO);
-
-        mensagemDTO.setCriadoEm(LocalDateTime.now());
-
-        mensagensService.registrarMensagem(mensagemDTO);
-
-        messagingTemplate.convertAndSend(
-                "/topics/chat/" + chatId,
-                response
-        );
-
-        if(request.gpt()){
-            String chatGptMessage = chatGPTService.sendMessageToChatGPT(request.message());
-
-            MessageResponse chatGptResponse = new MessageResponse(
-                    chatGptMessage
-            );
-
-            MensagemDTO gptMensagemDTO = new MensagemDTO();
-            gptMensagemDTO.setChatId(chatId);
-            //deppois tirar remetente nao nulo
-            gptMensagemDTO.setRemetenteId(usuario.id());
-            gptMensagemDTO.setConteudo(chatGptMessage);
-            gptMensagemDTO.setOrigem(OrigemMensagem.GPT);
-            gptMensagemDTO.setCriadoEm(LocalDateTime.now());
-
-            mensagensService.registrarMensagem(gptMensagemDTO);
-
-            messagingTemplate.convertAndSend(
-                    "/topics/chat/" + chatId,
-                    chatGptResponse
-            );
-        }
     }
 }
