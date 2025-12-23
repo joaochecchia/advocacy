@@ -88,13 +88,6 @@ export default function Login() {
                 </Button>
               </Link>
             </div>
-
-            <div className="mt-6 p-4 bg-accent/10 rounded-lg text-sm space-y-2">
-              <p className="font-semibold">Dados para teste:</p>
-              <p><strong>Cliente:</strong> cliente@teste.com</p>
-              <p><strong>Admin:</strong> admin@teste.com</p>
-              <p><strong>Senha:</strong> qualquer senha</p>
-            </div>
           </CardContent>
         </Card>
       </div>
