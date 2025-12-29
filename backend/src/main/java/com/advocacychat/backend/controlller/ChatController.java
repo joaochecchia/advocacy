@@ -1,35 +1,34 @@
 package com.advocacychat.backend.controlller;
 
-import com.advocacychat.backend.request.MessageRequest;
-import com.advocacychat.backend.response.JWTUserData;
+import com.advocacychat.backend.dto.ChatDTO;
 import com.advocacychat.backend.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-@Controller
+@RestController
+@RequestMapping("/chat")
 @RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
 
-    @MessageMapping("/new-message/{chatId}")
-    public void newMessage(
-            @DestinationVariable Long chatId,
-            MessageRequest request,
-            @Header("simpSessionAttributes") Map<String, Object> sessionAttrs
-    ) {
+    @GetMapping("/getAllChatsByUserId/{id}")
+    public ResponseEntity<Map<String, Object>> buscarChatsPorClienteId(@PathVariable Long id) {
+        Optional<List<ChatDTO>> chats = chatService.getAllChatsByClienteId(id);
 
-        JWTUserData usuario = (JWTUserData) sessionAttrs.get("user");
+        Map<String, Object> response = new HashMap<>();
+        response.put("Message", "chats encontrados com sucesso.");
+        response.put("Body", chats.get());
 
-        chatService.processarNovaMensagem(
-                chatId,
-                usuario,
-                request
-        );
+        return ResponseEntity.ok(response);
     }
 }

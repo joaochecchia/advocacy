@@ -82,14 +82,13 @@ public class ChatService {
     }
 
     public Optional<List<ChatDTO>> getAllChatsByClienteId(Long id){
-        clienteService.findClienteById(id);
+        clienteService.findClienteById(id).orElseThrow(() -> new NotFindObjectByIdentifierException("Cliente com id " + id + " nao existe."));
 
         List<ChatModel> chatModels = chatRepository.findAllByClienteModel_Id(id);
 
         if(chatModels.isEmpty()){
             throw new NotFindObjectByIdentifierException("Cliente com id: " + id + "nao possui chats.");
         }
-
 
         return Optional.of(
                 chatModels.stream()
