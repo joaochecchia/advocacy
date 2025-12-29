@@ -21,6 +21,42 @@ interface User {
   type: UserType;
 }
 
+type ApiResponse<T> = {
+  Message: string
+  Body: T
+}
+
+export interface Cliente {
+  idUsuario: number
+  nome: string
+  email: string
+  tipoUsuario: string
+  ativo: boolean
+  criadoEmUsuario: string | null
+  atualizadoEmUsuario: string | null
+  idCliente: number
+  cpf: string
+  telefone: string
+  criadoEmCliente: string | null
+  chatIds: number[]
+}
+
+
+export interface Advogado {
+  idUsuario: number
+  nome: string
+  email: string
+  tipoUsuario: string
+  ativo: boolean
+  criadoEmUsuario: string | null
+  atualizadoEmUsuario: string | null
+  idAdvogado: number
+  oab: string
+  especialidade: string
+  criadoEmAdvogado: string | null
+}
+
+
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
@@ -83,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Persistência
-    localStorage.setItem("token", token);
+    localStorage.setItem("token", token); 
     localStorage.setItem("userId", String(id));
     localStorage.setItem("userType", userType);
     localStorage.setItem("email", email);
@@ -92,8 +128,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Redirect
     if (userType === "admin") {
+      const response = await api.get<ApiResponse<Advogado>>(
+        `/advogado/getAdvogadoByUserId/${id}`
+      );
+
+      const advogado = response.data.Body;
+      localStorage.setItem("Advogado", JSON.stringify(advogado));
+
+      console.log("Dados do advogado:", advogado);
+      
       navigate("/admin/dashboard");
     } else {
+      const response = await api.get<ApiResponse<Cliente>>(
+        `/cliente/getClienteByUserId/${id}`
+      );
+
+      const cliente = response.data.Body;
+      localStorage.setItem("Cliente", JSON.stringify(cliente));
+
+      console.log("Dados do cliente:", cliente);
+      
       navigate("/client/chat");
     }
   };
@@ -126,7 +180,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
     }
 
-    setLoading(false); // 🔥 ponto-chave
+    setLoading(false); 
   }, []);
 
   return (

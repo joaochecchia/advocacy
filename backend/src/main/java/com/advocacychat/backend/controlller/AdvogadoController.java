@@ -41,7 +41,10 @@ public class AdvogadoController {
     }
 
     @PatchMapping("/patchAdvogado/{id}")
-    public ResponseEntity<Map<String, Object>> patchAdvogadoByUserId(@PathVariable Long id, @RequestBody AdvogadoDTO request){
+    public ResponseEntity<Map<String, Object>> patchAdvogadoByUserId(
+            @PathVariable Long id,
+            @RequestBody AdvogadoDTO request
+    ){
         Optional<AdvogadoResponse> advogado = advogadoService.patchAdvogadoById(id, request);
 
         Map<String, Object> response = new HashMap<>();
