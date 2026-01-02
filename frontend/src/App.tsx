@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ChatProvider } from "@/contexts/ChatContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Public Pages
@@ -41,7 +42,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            {/* Public Routes */}
+            {/* ================= PUBLIC ================= */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/payment-pix" element={<PaymentPix />} />
@@ -49,49 +50,25 @@ const App = () => (
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/login" element={<Login />} />
 
-            {/* Client Routes */}
+            {/* ================= CLIENT ================= */}
             <Route
-              path="/client/chat"
+              path="/client/*"
               element={
                 <ProtectedRoute requiredType="client">
-                  <ClientChat />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/client/novidades"
-              element={
-                <ProtectedRoute requiredType="client">
-                  <ClientNovidades />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/client/agendamento"
-              element={
-                <ProtectedRoute requiredType="client">
-                  <ClientAgendamento />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/client/assinatura"
-              element={
-                <ProtectedRoute requiredType="client">
-                  <ClientAssinatura />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/client/perfil"
-              element={
-                <ProtectedRoute requiredType="client">
-                  <ClientPerfil />
+                  <ChatProvider>
+                    <Routes>
+                      <Route path="chat" element={<ClientChat />} />
+                      <Route path="novidades" element={<ClientNovidades />} />
+                      <Route path="agendamento" element={<ClientAgendamento />} />
+                      <Route path="assinatura" element={<ClientAssinatura />} />
+                      <Route path="perfil" element={<ClientPerfil />} />
+                    </Routes>
+                  </ChatProvider>
                 </ProtectedRoute>
               }
             />
 
-            {/* Admin Routes */}
+            {/* ================= ADMIN ================= */}
             <Route
               path="/admin/dashboard"
               element={
@@ -141,7 +118,7 @@ const App = () => (
               }
             />
 
-            {/* 404 */}
+            {/* ================= 404 ================= */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

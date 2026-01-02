@@ -1,55 +1,74 @@
-import { useState } from 'react';
-import { Layout } from '@/components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Send, Bot, User } from 'lucide-react';
-import { toast } from 'sonner';
+import { Layout } from "@/components/Layout";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
-interface Message {
-  id: number;
-  text: string;
-  sender: 'user' | 'lawyer';
-  timestamp: Date;
-}
+import { Send, Bot, User } from "lucide-react";
+import { toast } from "sonner";
+
+import { useState } from "react";
+import { useChat } from "@/contexts/ChatContext";
 
 export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: 'Olá! Bem-vindo ao chat jurídico. Como posso ajudá-lo hoje?',
-      sender: 'lawyer',
-      timestamp: new Date(),
-    },
-  ]);
-  const [newMessage, setNewMessage] = useState('');
+  /* =======================
+     Context
+  ======================= */
+
+  const {
+    mensagens,
+    chatAtivo,
+    loading,
+  } = useChat();
+
+  /* =======================
+     State local (input)
+  ======================= */
+
+  const [newMessage, setNewMessage] = useState("");
+
+  /* =======================
+     Loading
+  ======================= */
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="text-center mt-10">Carregando mensagens...</div>
+      </Layout>
+    );
+  }
+
+  if (!chatAtivo) {
+    return (
+      <Layout>
+        <div className="text-center mt-10">
+          Nenhum chat disponível.
+        </div>
+      </Layout>
+    );
+  }
+
+  /* =======================
+     Enviar mensagem (mock por enquanto)
+  ======================= */
 
   const handleSend = () => {
     if (!newMessage.trim()) return;
 
-    const userMessage: Message = {
-      id: messages.length + 1,
-      text: newMessage,
-      sender: 'user',
-      timestamp: new Date(),
-    };
+    // ⚠️ Aqui depois você liga no backend / websocket
+    toast.success("Mensagem enviada");
 
-    setMessages([...messages, userMessage]);
-    setNewMessage('');
-
-    // Simula resposta do advogado
-    setTimeout(() => {
-      const lawyerMessage: Message = {
-        id: messages.length + 2,
-        text: 'Recebi sua mensagem. Vou analisar e responder em breve.',
-        sender: 'lawyer',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, lawyerMessage]);
-    }, 1500);
-
-    toast.success('Mensagem enviada');
+    setNewMessage("");
   };
+
+  /* =======================
+     Render
+  ======================= */
 
   return (
     <Layout>
@@ -58,44 +77,71 @@ export default function Chat() {
 
         <Card className="h-[600px] flex flex-col">
           <CardHeader className="border-b">
-            <CardTitle className="text-lg">Consultoria Jurídica</CardTitle>
+            <CardTitle className="text-lg">
+              Consultoria Jurídica
+            </CardTitle>
           </CardHeader>
 
+          {/* =======================
+              Mensagens
+          ======================= */}
+
           <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${
-                  message.sender === 'user' ? 'flex-row-reverse' : ''
-                }`}
-              >
+            {mensagens.map((mensagem) => {
+              const isCliente = mensagem.origem === "CLIENTE";
+
+              return (
                 <div
-                  className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                    message.sender === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-accent text-accent-foreground'
+                  key={mensagem.id}
+                  className={`flex gap-3 ${
+                    isCliente ? "flex-row-reverse" : ""
                   }`}
                 >
-                  {message.sender === 'user' ? <User size={20} /> : <Bot size={20} />}
+                  {/* Avatar */}
+                  <div
+                    className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                      isCliente
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-accent text-accent-foreground"
+                    }`}
+                  >
+                    {isCliente ? (
+                      <User size={20} />
+                    ) : (
+                      <Bot size={20} />
+                    )}
+                  </div>
+
+                  {/* Bubble */}
+                  <div
+                    className={`max-w-[70%] p-4 rounded-lg ${
+                      isCliente
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary"
+                    }`}
+                  >
+                    <p>{mensagem.conteudo}</p>
+
+                    {mensagem.criadoEm && (
+                      <p className="text-xs mt-2 opacity-70">
+                        {new Date(mensagem.criadoEm).toLocaleTimeString(
+                          "pt-BR",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div
-                  className={`max-w-[70%] p-4 rounded-lg ${
-                    message.sender === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary'
-                  }`}
-                >
-                  <p>{message.text}</p>
-                  <p className="text-xs mt-2 opacity-70">
-                    {message.timestamp.toLocaleTimeString('pt-BR', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </CardContent>
+
+          {/* =======================
+              Input
+          ======================= */}
 
           <div className="border-t p-4">
             <div className="flex gap-2">
@@ -106,13 +152,18 @@ export default function Chat() {
                 className="resize-none"
                 rows={3}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
+                  if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSend();
                   }
                 }}
               />
-              <Button onClick={handleSend} size="icon" className="self-end">
+
+              <Button
+                onClick={handleSend}
+                size="icon"
+                className="self-end"
+              >
                 <Send size={20} />
               </Button>
             </div>

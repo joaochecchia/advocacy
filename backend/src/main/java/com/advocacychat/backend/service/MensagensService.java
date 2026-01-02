@@ -5,9 +5,13 @@ import com.advocacychat.backend.mapper.MensagemMapper;
 import com.advocacychat.backend.model.MensagemModel;
 import com.advocacychat.backend.repository.MensagensRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,5 +38,32 @@ public class MensagensService {
         return Optional.of(mensagens.get().stream()
                 .map(mensagemMapper::modelToDto)
                 .collect(Collectors.toCollection(ArrayList::new)));
+    }
+
+      /* ===============================
+        Buscar paginas de 30 mensagens
+      =============================== */
+
+    public List<MensagemDTO> buscarUltimasMensagensPorChat(
+            Long chatId,
+            int page
+    ) {
+        PageRequest pageable = PageRequest.of(
+                page,                      // página
+                30,                        // tamanho
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+
+        Page<MensagemModel> mensagensPage =
+                mensagensRepository.findByChatModel_Id(chatId, pageable);
+
+        List<MensagemModel> mensagens =
+                new ArrayList<>(mensagensPage.getContent());
+
+        Collections.reverse(mensagens);
+
+        return mensagens.stream()
+                .map(mensagemMapper::modelToDto)
+                .collect(Collectors.toList());
     }
 }
