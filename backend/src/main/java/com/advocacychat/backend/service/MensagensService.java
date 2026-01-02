@@ -50,7 +50,7 @@ public class MensagensService {
     ) {
         PageRequest pageable = PageRequest.of(
                 page,                      // página
-                30,                        // tamanho
+                5,                        // tamanho
                 Sort.by(Sort.Direction.DESC, "id")
         );
 

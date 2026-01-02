@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, Bot, User } from "lucide-react";
 import { toast } from "sonner";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/contexts/ChatContext";
 
 export default function Chat() {
@@ -23,13 +23,63 @@ export default function Chat() {
     mensagens,
     chatAtivo,
     loading,
+    page,
+    setPage,
+    carregarMensagens,
   } = useChat();
 
   /* =======================
-     State local (input)
+     State local
   ======================= */
 
   const [newMessage, setNewMessage] = useState("");
+
+  /* =======================
+     Refs
+  ======================= */
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const firstLoadRef = useRef(true);
+
+  /* =======================
+     Load inicial do chat
+  ======================= */
+
+  useEffect(() => {
+    if (!chatAtivo) return;
+
+    setPage(0);
+    carregarMensagens(chatAtivo.id, 0);
+    firstLoadRef.current = true;
+  }, [chatAtivo]);
+
+  /* =======================
+     Scroll automático para o final
+     (somente no primeiro load)
+  ======================= */
+
+  useEffect(() => {
+    if (firstLoadRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+      firstLoadRef.current = false;
+    }
+  }, [mensagens]);
+
+  /* =======================
+     Scroll infinito (para cima)
+  ======================= */
+
+  const handleScroll = () => {
+    const container = containerRef.current;
+    if (!container || !chatAtivo) return;
+
+    if (container.scrollTop === 0) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      carregarMensagens(chatAtivo.id, nextPage);
+    }
+  };
 
   /* =======================
      Loading
@@ -38,7 +88,9 @@ export default function Chat() {
   if (loading) {
     return (
       <Layout>
-        <div className="text-center mt-10">Carregando mensagens...</div>
+        <div className="text-center mt-10">
+          Carregando mensagens...
+        </div>
       </Layout>
     );
   }
@@ -54,16 +106,16 @@ export default function Chat() {
   }
 
   /* =======================
-     Enviar mensagem (mock por enquanto)
+     Enviar mensagem (mock)
   ======================= */
 
   const handleSend = () => {
     if (!newMessage.trim()) return;
 
-    // ⚠️ Aqui depois você liga no backend / websocket
     toast.success("Mensagem enviada");
-
     setNewMessage("");
+
+    // 🔜 Aqui depois entra POST / WebSocket
   };
 
   /* =======================
@@ -73,7 +125,9 @@ export default function Chat() {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Chat Jurídico</h1>
+        <h1 className="text-3xl font-bold mb-6">
+          Chat Jurídico
+        </h1>
 
         <Card className="h-[600px] flex flex-col">
           <CardHeader className="border-b">
@@ -86,7 +140,11 @@ export default function Chat() {
               Mensagens
           ======================= */}
 
-          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+          <CardContent
+            ref={containerRef}
+            onScroll={handleScroll}
+            className="flex-1 overflow-y-auto p-4 space-y-4"
+          >
             {mensagens.map((mensagem) => {
               const isCliente = mensagem.origem === "CLIENTE";
 
@@ -137,6 +195,9 @@ export default function Chat() {
                 </div>
               );
             })}
+
+            {/* Âncora do fim do chat */}
+            <div ref={bottomRef} />
           </CardContent>
 
           {/* =======================
@@ -159,11 +220,7 @@ export default function Chat() {
                 }}
               />
 
-              <Button
-                onClick={handleSend}
-                size="icon"
-                className="self-end"
-              >
+              <Button onClick={handleSend} size="icon">
                 <Send size={20} />
               </Button>
             </div>
