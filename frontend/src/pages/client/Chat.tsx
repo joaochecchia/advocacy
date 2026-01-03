@@ -14,6 +14,11 @@ import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/contexts/ChatContext";
 
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+
+const API_BASE = "http://localhost:8080";
+
 export default function Chat() {
   /* =======================
      Context
@@ -33,9 +38,10 @@ export default function Chat() {
   ======================= */
 
   const [newMessage, setNewMessage] = useState("");
+  const stompClientRef = useRef<Stomp.Client | null>(null);
 
   /* =======================
-     Refs
+     Refs de scroll
   ======================= */
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,7 +49,7 @@ export default function Chat() {
   const firstLoadRef = useRef(true);
 
   /* =======================
-     Load inicial do chat
+     Load inicial
   ======================= */
 
   useEffect(() => {
@@ -52,11 +58,16 @@ export default function Chat() {
     setPage(0);
     carregarMensagens(chatAtivo.id, 0);
     firstLoadRef.current = true;
+
+    conectarWebSocket(chatAtivo.id);
+
+    return () => {
+      stompClientRef.current?.disconnect();
+    };
   }, [chatAtivo]);
 
   /* =======================
-     Scroll automático para o final
-     (somente no primeiro load)
+     Scroll automático (somente 1ª vez)
   ======================= */
 
   useEffect(() => {
@@ -79,6 +90,71 @@ export default function Chat() {
       setPage(nextPage);
       carregarMensagens(chatAtivo.id, nextPage);
     }
+  };
+
+  /* =======================
+     WebSocket
+  ======================= */
+
+  const conectarWebSocket = (chatId: number) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Token não encontrado");
+      return;
+    }
+
+    const socket = new SockJS(
+      `${API_BASE}/build-chat?token=${token}`
+    );
+
+    const stompClient = Stomp.over(socket);
+    stompClient.debug = () => {}; // remove logs
+
+    stompClient.connect(
+      {},
+      () => {
+        stompClient.subscribe(
+          `/topics/chat/${chatId}`,
+          (message) => {
+            const body = JSON.parse(message.body);
+
+            // adiciona nova mensagem no chat
+            carregarMensagens(chatId, 0);
+            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+          }
+        );
+      },
+      () => {
+        toast.error("Erro ao conectar no chat");
+      }
+    );
+
+    stompClientRef.current = stompClient;
+  };
+
+  /* =======================
+     Enviar mensagem
+  ======================= */
+
+  const handleSend = () => {
+    if (!newMessage.trim() || !chatAtivo) return;
+
+    if (!stompClientRef.current) {
+      toast.error("WebSocket não conectado");
+      return;
+    }
+
+    stompClientRef.current.send(
+      `/advocacy-chat/new-message/${chatAtivo.id}`,
+      {},
+      JSON.stringify({
+        message: newMessage,
+        chatId: chatAtivo.id,
+        gpt: true, // ou false, se quiser controlar
+      })
+    );
+
+    setNewMessage("");
   };
 
   /* =======================
@@ -106,19 +182,6 @@ export default function Chat() {
   }
 
   /* =======================
-     Enviar mensagem (mock)
-  ======================= */
-
-  const handleSend = () => {
-    if (!newMessage.trim()) return;
-
-    toast.success("Mensagem enviada");
-    setNewMessage("");
-
-    // 🔜 Aqui depois entra POST / WebSocket
-  };
-
-  /* =======================
      Render
   ======================= */
 
@@ -136,17 +199,15 @@ export default function Chat() {
             </CardTitle>
           </CardHeader>
 
-          {/* =======================
-              Mensagens
-          ======================= */}
-
+          {/* Mensagens */}
           <CardContent
             ref={containerRef}
             onScroll={handleScroll}
             className="flex-1 overflow-y-auto p-4 space-y-4"
           >
             {mensagens.map((mensagem) => {
-              const isCliente = mensagem.origem === "CLIENTE";
+              const isCliente =
+                mensagem.origem === "CLIENTE";
 
               return (
                 <div
@@ -157,7 +218,7 @@ export default function Chat() {
                 >
                   {/* Avatar */}
                   <div
-                    className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       isCliente
                         ? "bg-primary text-primary-foreground"
                         : "bg-accent text-accent-foreground"
@@ -182,13 +243,12 @@ export default function Chat() {
 
                     {mensagem.criadoEm && (
                       <p className="text-xs mt-2 opacity-70">
-                        {new Date(mensagem.criadoEm).toLocaleTimeString(
-                          "pt-BR",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }
-                        )}
+                        {new Date(
+                          mensagem.criadoEm
+                        ).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </p>
                     )}
                   </div>
@@ -196,24 +256,24 @@ export default function Chat() {
               );
             })}
 
-            {/* Âncora do fim do chat */}
             <div ref={bottomRef} />
           </CardContent>
 
-          {/* =======================
-              Input
-          ======================= */}
-
+          {/* Input */}
           <div className="border-t p-4">
             <div className="flex gap-2">
               <Textarea
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={(e) =>
+                  setNewMessage(e.target.value)
+                }
                 placeholder="Digite sua mensagem..."
-                className="resize-none"
                 rows={3}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
+                  if (
+                    e.key === "Enter" &&
+                    !e.shiftKey
+                  ) {
                     e.preventDefault();
                     handleSend();
                   }

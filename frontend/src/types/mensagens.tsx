@@ -1,4 +1,4 @@
-export type OrigemMensagem = "CLIENTE" | "ADVOGADO" | "SISTEMA";
+export type OrigemMensagem = "CLIENTE" | "ADVOGADO" | "GPT";
 
 export interface Mensagem {
   id: number;
@@ -6,5 +6,5 @@ export interface Mensagem {
   remetenteId: number;
   conteudo: string;
   origem: OrigemMensagem;
-  criadoEm: string; 
+  criadoEm: string;
 }
