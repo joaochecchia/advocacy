@@ -4,11 +4,14 @@ import com.advocacychat.backend.dto.ChatDTO;
 import com.advocacychat.backend.dto.MensagemDTO;
 import com.advocacychat.backend.enums.OrigemMensagem;
 import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
+import com.advocacychat.backend.exceptions.NullFieldException;
 import com.advocacychat.backend.exceptions.UnauthorizedRoleException;
 import com.advocacychat.backend.mapper.ChatMapper;
 import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.repository.ChatRepository;
 import com.advocacychat.backend.request.MessageRequest;
+import com.advocacychat.backend.response.ChatResponse;
+import com.advocacychat.backend.response.GetAlllChatsResponse;
 import com.advocacychat.backend.response.JWTUserData;
 import com.advocacychat.backend.response.MessageResponse;
 import lombok.RequiredArgsConstructor;
@@ -96,6 +99,32 @@ public class ChatService {
                         .collect(Collectors.toCollection(ArrayList::new))
         );
     }
+
+    public GetAlllChatsResponse getAllChats() {
+
+        List<ChatResponse> chats = chatRepository.findAll()
+                .stream()
+                .map(chat -> {
+
+                    ChatDTO chatDTO = chatMapper.modelToDto(chat);
+
+                    return new ChatResponse(
+                            chatDTO,
+                            chat.getClienteModel().getId(),
+                            chat.getClienteModel().getUsuarioModel().getNome(),
+                            chat.getAtivo(),
+                            mensagensService.buscarUltimaMensagemPorChatId(chat.getId()),
+                            mensagensService.buscarDataUltimaMensagem(chat.getId())
+                    );
+                })
+                .toList();
+
+        return new GetAlllChatsResponse(
+                "Todos os chats encontrados com sucesso.",
+                chats
+        );
+    }
+
 
     private void processarMensagemGPT(Long chatId, JWTUserData usuario, String conteudo) {
 

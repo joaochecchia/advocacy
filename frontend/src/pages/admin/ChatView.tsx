@@ -17,9 +17,9 @@ interface Message {
 
 const mockChats = {
   '1': {
-    client: 'Maria Silva',
+    client: 'Maria Silvaaaa',
     messages: [
-      { id: 1, text: 'Obrigada pela ajuda com o contrato...', sender: 'client' as const, timestamp: new Date() },
+      { id: 1, text: 'Obrigaasdasdadda pela ajuda com o contrato...', sender: 'client' as const, timestamp: new Date() },
       { id: 2, text: 'Olá Maria, estou à disposição para ajudar.', sender: 'admin' as const, timestamp: new Date() },
     ],
   },

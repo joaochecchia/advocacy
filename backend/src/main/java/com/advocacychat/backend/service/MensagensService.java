@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,4 +67,19 @@ public class MensagensService {
                 .map(mensagemMapper::modelToDto)
                 .collect(Collectors.toList());
     }
+
+    public String buscarUltimaMensagemPorChatId(Long chatId) {
+        return mensagensRepository
+                .findFirstByChatModelIdOrderByCriadoEmDesc(chatId)
+                .map(m -> m.getConteudo())
+                .orElse(null);
+    }
+
+    public LocalDateTime buscarDataUltimaMensagem(Long chatId) {
+        return mensagensRepository
+                .findFirstByChatModelIdOrderByCriadoEmDesc(chatId)
+                .map(m -> m.getCriadoEm())
+                .orElse(null);
+    }
+
 }

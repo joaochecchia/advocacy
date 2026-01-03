@@ -1,6 +1,7 @@
 package com.advocacychat.backend.controlller;
 
 import com.advocacychat.backend.dto.ChatDTO;
+import com.advocacychat.backend.response.GetAlllChatsResponse;
 import com.advocacychat.backend.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,10 @@ public class ChatController {
         response.put("Body", chats.get());
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<GetAlllChatsResponse> buscarTodosChats() {
+        return ResponseEntity.ok(chatService.getAllChats());
     }
 }
