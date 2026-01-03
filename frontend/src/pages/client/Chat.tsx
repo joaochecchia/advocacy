@@ -108,7 +108,7 @@ export default function Chat() {
     );
 
     const stompClient = Stomp.over(socket);
-    stompClient.debug = () => {}; // remove logs
+    stompClient.debug = () => {}; 
 
     stompClient.connect(
       {},
@@ -118,7 +118,6 @@ export default function Chat() {
           (message) => {
             const body = JSON.parse(message.body);
 
-            // adiciona nova mensagem no chat
             carregarMensagens(chatId, 0);
             bottomRef.current?.scrollIntoView({ behavior: "smooth" });
           }
@@ -150,7 +149,7 @@ export default function Chat() {
       JSON.stringify({
         message: newMessage,
         chatId: chatAtivo.id,
-        gpt: true, // ou false, se quiser controlar
+        gpt: true, 
       })
     );
 
@@ -205,13 +204,13 @@ export default function Chat() {
             onScroll={handleScroll}
             className="flex-1 overflow-y-auto p-4 space-y-4"
           >
-            {mensagens.map((mensagem) => {
+            {mensagens.map((mensagem, index) => {
               const isCliente =
                 mensagem.origem === "CLIENTE";
 
               return (
                 <div
-                  key={mensagem.id}
+                  key={`${mensagem.id}-${index}`}
                   className={`flex gap-3 ${
                     isCliente ? "flex-row-reverse" : ""
                   }`}

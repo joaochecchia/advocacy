@@ -11,9 +11,25 @@ import { getAllChats } from "@/services/ChatService";
 import { ChatResponse } from "@/types/chatResponse";
 
 export default function Chats() {
+  /* =======================
+     State local
+     - chats: lista de todos os chats disponíveis
+  ======================= */
   const [chats, setChats] = useState<ChatResponse[]>([]);
+
+  /* =======================
+     Hook de navegação
+     - useNavigate: permite navegar para tela do chat específico
+  ======================= */
   const navigate = useNavigate();
 
+  /* =======================
+     Load inicial
+     - useEffect para buscar todos os chats ao montar componente
+     - Chama getAllChats do serviço
+     - Atualiza state chats
+     - Trata erros com console.error
+  ======================= */
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -27,10 +43,18 @@ export default function Chats() {
     fetchChats();
   }, []);
 
+  /* =======================
+     Render
+     - Layout principal da página
+     - Cabeçalho, lista de chats e botão de abrir cada chat
+  ======================= */
   return (
     <Layout>
       <div className="space-y-6">
-        {/* Cabeçalho */}
+        {/* =======================
+            Cabeçalho da página
+            - Título e descrição
+        ======================= */}
         <div>
           <h1 className="text-3xl font-bold mb-2">Gerenciar Chats</h1>
           <p className="text-muted-foreground">
@@ -38,19 +62,32 @@ export default function Chats() {
           </p>
         </div>
 
-        {/* Lista de chats */}
+        {/* =======================
+            Lista de chats
+            - Mapeia cada chat para um Card
+            - Mostra ícone, nome do cliente, status, última mensagem e data
+        ======================= */}
         <div className="grid gap-4">
           {chats.map((chat) => (
             <Card key={chat.chat.id} className="hover:shadow-md transition-shadow">
               <CardContent className="pt-6">
                 <div className="flex items-start justify-between">
                   <div className="flex gap-4 flex-1">
-                    {/* Ícone */}
+                    {/* =======================
+                        Ícone do chat
+                        - MessageSquare estilizado
+                    ======================= */}
                     <div className="p-3 bg-primary/10 rounded-full flex-shrink-0">
                       <MessageSquare className="text-primary" size={24} />
                     </div>
 
-                    {/* Conteúdo do chat */}
+                    {/* =======================
+                        Conteúdo do chat
+                        - Nome do cliente
+                        - Status (ativo/inativo)
+                        - Última mensagem
+                        - Data da última mensagem
+                    ======================= */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         {/* Nome do cliente */}
@@ -82,11 +119,18 @@ export default function Chats() {
                     </div>
                   </div>
 
-                  {/* Botão abrir chat */}
+                  {/* =======================
+                      Botão abrir chat
+                      - Redireciona para ChatView com query params
+                  ======================= */}
                   <Button
                     className="ml-4"
                     onClick={() =>
-                      navigate(`/admin/chat-view?chatId=${chat.chat.id}&clienteId=${chat.clienteId}`)
+                      navigate(
+                        `/admin/chat-view?chatId=${chat.chat.id}&clienteId=${chat.clienteId}&clienteNome=${encodeURIComponent(
+                          chat.clienteNome
+                        )}&ativo=${chat.ativo}`
+                      )
                     }
                   >
                     Abrir Chat
