@@ -17,3 +17,7 @@ package-lock.json
 *.iml
 *.ipr
 *.iws
+
+.env
+.env.development
+.env.production
