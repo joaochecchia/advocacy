@@ -26,9 +26,23 @@ export default function Login() {
     
     try {
       await login(email, password);
-      toast.success('Login realizado com sucesso!');
-    } catch (error) {
-      toast.error('Erro ao fazer login');
+      // Toast de sucesso será mostrado após o redirecionamento
+      // Não mostrar aqui para evitar conflito
+    } catch (error: any) {
+      console.error('Erro no login:', error);
+      
+      // Mensagens de erro mais específicas
+      if (error.response?.status === 401) {
+        toast.error('Email ou senha incorretos');
+      } else if (error.response?.status === 404) {
+        toast.error('Servidor não encontrado. Verifique a configuração da API.');
+      } else if (error.response?.status >= 500) {
+        toast.error('Erro no servidor. Tente novamente mais tarde.');
+      } else if (error.message?.includes('Network Error') || error.code === 'ERR_NETWORK') {
+        toast.error('Erro de conexão. Verifique sua internet.');
+      } else {
+        toast.error(error.response?.data?.Message || 'Erro ao fazer login');
+      }
     } finally {
       setLoading(false);
     }

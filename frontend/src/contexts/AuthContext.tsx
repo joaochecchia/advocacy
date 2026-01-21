@@ -96,20 +96,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     setUser(userData);
 
-    // Redirect
-    if (userType === "admin") {
-      const advogado = await getAdvogado();
-
-      console.log("Dados do advogado:", advogado);
-
-      navigate("/admin/dashboard");
-    } else {
-      const cliente = await getCliente();
-      localStorage.setItem("Cliente", JSON.stringify(cliente));
-
-      console.log("Dados do cliente:", cliente);
-      
-      navigate("/client/chat");
+    // Redirect - Busca dados do usuário de forma não-bloqueante
+    // Se a busca falhar, o usuário ainda pode acessar o sistema
+    try {
+      if (userType === "admin") {
+        try {
+          const advogado = await getAdvogado();
+          console.log("Dados do advogado:", advogado);
+        } catch (error) {
+          console.warn("Erro ao buscar dados do advogado:", error);
+          // Continua mesmo se falhar - dados podem ser buscados depois
+        }
+        navigate("/admin/dashboard");
+      } else {
+        try {
+          const cliente = await getCliente();
+          localStorage.setItem("Cliente", JSON.stringify(cliente));
+          console.log("Dados do cliente:", cliente);
+        } catch (error) {
+          console.warn("Erro ao buscar dados do cliente:", error);
+          // Continua mesmo se falhar - dados podem ser buscados depois
+        }
+        navigate("/client/chat");
+      }
+    } catch (error) {
+      // Se houver erro no navigate, ainda considera login bem-sucedido
+      console.error("Erro durante redirecionamento:", error);
+      // Navegação de fallback
+      if (userType === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/client/chat");
+      }
     }
   };
 

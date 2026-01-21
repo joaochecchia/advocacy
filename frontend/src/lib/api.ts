@@ -1,13 +1,17 @@
 import axios from "axios";
+import { getApiBaseURL } from "./config";
 
 const isDev = import.meta.env.DEV;
 
+// Usa função centralizada para obter URL da API
+const apiBaseURL = getApiBaseURL();
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: apiBaseURL,
 });
 
 if (isDev) {
-  console.info("[API] Base URL:", import.meta.env.VITE_API_URL);
+  console.info("[API] Base URL:", apiBaseURL);
 }
 
 api.interceptors.request.use((config) => {
@@ -27,3 +31,41 @@ api.interceptors.request.use((config) => {
 
   return config;
 });
+
+// Interceptor de resposta para tratamento de erros
+api.interceptors.response.use(
+  (response) => {
+    // Resposta bem-sucedida
+    if (isDev) {
+      console.debug("[API RESPONSE]", {
+        status: response.status,
+        url: response.config.url,
+        data: response.data,
+      });
+    }
+    return response;
+  },
+  (error) => {
+    // Tratamento de erros
+    if (isDev) {
+      console.error("[API ERROR]", {
+        status: error.response?.status,
+        url: error.config?.url,
+        message: error.message,
+        data: error.response?.data,
+      });
+    }
+
+    // Se for erro 401 (não autorizado), limpar token e redirecionar
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userType");
+      localStorage.removeItem("email");
+      // Não redirecionar automaticamente aqui, deixar o componente tratar
+    }
+
+    // Propaga o erro para ser tratado no componente
+    return Promise.reject(error);
+  }
+);

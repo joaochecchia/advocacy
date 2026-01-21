@@ -12,8 +12,7 @@ import Stomp, { Client } from 'stompjs';
 
 import { getMensagem } from '@/services/MessagemService';
 import { Mensagem, OrigemMensagem } from '@/types/mensagens';
-
-const API_BASE = 'http://localhost:8080';
+import { getApiBaseURL } from '@/lib/config';
 
 interface Message {
   id: number;
@@ -137,7 +136,7 @@ export default function ChatView() {
 
     const chatId = parseInt(chatIdParam);
 
-    const socket = new SockJS(`${API_BASE}/build-chat?token=${token}`);
+    const socket = new SockJS(`${getApiBaseURL()}/build-chat?token=${token}`);
     const stomp = Stomp.over(socket);
     stomp.debug = () => {}; // desativa logs do STOMP
 

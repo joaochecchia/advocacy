@@ -17,6 +17,7 @@ import { getMensagem } from "@/services/MessagemService";
 
 import SockJS from "sockjs-client";
 import Stomp, { Client } from "stompjs";
+import { getApiBaseURL } from "@/lib/config";
 
 /* =======================
    Tipagem
@@ -53,8 +54,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const stompClientRef = useRef<Client | null>(null);
-
-  const API_BASE = "http://localhost:8080";
 
   /* =======================
      Load inicial
@@ -97,7 +96,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     if (!token) return;
 
     const socket = new SockJS(
-      `${API_BASE}/build-chat?token=${token}`
+      `${getApiBaseURL()}/build-chat?token=${token}`
     );
 
     const stomp = Stomp.over(socket);

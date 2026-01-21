@@ -16,8 +16,7 @@ import { useChat } from "@/contexts/ChatContext";
 
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-
-const API_BASE = "http://localhost:8080";
+import { getApiBaseURL } from "@/lib/config";
 
 export default function Chat() {
   /* =======================
@@ -104,7 +103,7 @@ export default function Chat() {
     }
 
     const socket = new SockJS(
-      `${API_BASE}/build-chat?token=${token}`
+      `${getApiBaseURL()}/build-chat?token=${token}`
     );
 
     const stompClient = Stomp.over(socket);
