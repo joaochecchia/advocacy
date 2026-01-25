@@ -63,9 +63,4 @@ public class ReuniaoController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/ping")
-    public String teste(){
-        return "pong";
-    }
-
 }

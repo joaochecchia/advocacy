@@ -74,9 +74,4 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/teste")
-    public String teste(){
-        return "Teste concluido";
-    }
-
 }
