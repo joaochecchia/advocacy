@@ -20,7 +20,7 @@ export const Layout = ({ children }: LayoutProps) => {
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
         <h1 className="ml-4 text-base font-semibold text-sidebar-foreground truncate">
-          Advocacia SaaS
+          Lexone
         </h1>
       </div>
 

@@ -104,7 +104,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Scale className="text-primary" size={32} />
-            <span className="text-xl font-bold text-primary">Advocacia SaaS</span>
+            <span className="text-xl font-bold text-primary">Lexone</span>
           </div>
           <div className="flex gap-4">
             <Link to="/login">
@@ -280,7 +280,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-8">
         <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 Advocacia SaaS. Todos os direitos reservados.</p>
+          <p>&copy; 2024 Lexone. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

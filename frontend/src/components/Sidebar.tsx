@@ -62,7 +62,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           {/* Logo */}
           <div className="p-6 border-b border-sidebar-border">
             <h2 className="text-xl font-bold text-sidebar-foreground">
-              Advocacia SaaS
+              Lexone
             </h2>
             <p className="text-sm text-sidebar-foreground/70 mt-1">
               {user?.type === 'admin' ? 'Painel Admin' : 'Portal do Cliente'}

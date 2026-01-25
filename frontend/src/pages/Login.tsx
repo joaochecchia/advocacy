@@ -54,7 +54,7 @@ export default function Login() {
         <div className="text-center">
           <div className="inline-flex items-center gap-2 mb-4">
             <Scale className="text-accent" size={40} />
-            <span className="text-2xl font-bold text-white">Advocacia SaaS</span>
+            <span className="text-2xl font-bold text-white">Lexone</span>
           </div>
           <p className="text-white/80">Acesse sua conta</p>
         </div>
