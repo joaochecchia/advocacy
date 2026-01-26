@@ -5,13 +5,18 @@ import com.advocacychat.backend.enums.TipoUsuario;
 import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
 import com.advocacychat.backend.mapper.AdvogadoMapper;
 import com.advocacychat.backend.model.AdvogadoModel;
+import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.UsuarioModel;
 import com.advocacychat.backend.repository.AdvogadoRepository;
+import com.advocacychat.backend.repository.ChatRepository;
+import com.advocacychat.backend.repository.MensagensRepository;
 import com.advocacychat.backend.response.AdvogadoResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +26,10 @@ public class AdvogadoService {
     private final AdvogadoMapper advogadoMapper;
 
     private final AdvogadoRepository advogadoRepository;
+
+    private final MensagensRepository mensagensRepository;
+
+    private final ChatRepository chatRepository;
 
     public Optional<AdvogadoResponse> findAdvogadoByUserId(Long id){
         Optional<AdvogadoModel> model = advogadoRepository.findByUsuarioModel_Id(id);
@@ -87,15 +96,30 @@ public class AdvogadoService {
     }
 
 
-    public Long deleteAdvogadoById(Long id){
-        Optional<AdvogadoModel> verificarModel = advogadoRepository.findById(id);
+    @Transactional
+    public Long deleteAdvogadoById(Long id) {
 
-        if(verificarModel.isEmpty()){
-            throw new NotFindObjectByIdentifierException("Advogado com id " + id + " nao existe.");
+        AdvogadoModel advogado = advogadoRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFindObjectByIdentifierException(
+                                "Advogado com id " + id + " nao existe."
+                        )
+                );
+
+        UsuarioModel usuario = advogado.getUsuarioModel();
+        Long usuarioId = usuario.getId();
+
+        List<ChatModel> chats = chatRepository.findAllByAdvogadoModel_Id(id);
+
+        mensagensRepository.deleteAllByRemetente_Id(usuarioId);
+
+        if (chats != null && !chats.isEmpty()) {
+            chatRepository.deleteAll(chats);
         }
 
-        advogadoRepository.deleteById(id);
+        advogadoRepository.delete(advogado);
 
         return id;
     }
+
 }

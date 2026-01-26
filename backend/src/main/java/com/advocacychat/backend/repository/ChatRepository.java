@@ -11,4 +11,6 @@ public interface ChatRepository extends JpaRepository<ChatModel, Long> {
     boolean existsByIdAndClienteModel_UsuarioModel_Id(Long chatId, Long usuarioId);
 
     List<ChatModel> findAllByClienteModel_Id(Long id);
+
+    List<ChatModel> findAllByAdvogadoModel_Id(Long advogadoId);
 }

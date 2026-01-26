@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "advogados")
@@ -16,7 +17,10 @@ public class AdvogadoModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JoinColumn(name = "usuario_id", nullable = false)
     private UsuarioModel usuarioModel;
 
@@ -24,6 +28,20 @@ public class AdvogadoModel {
     private String oab;
 
     private String especialidade;
+
+    @OneToMany(
+            mappedBy = "advogadoModel",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ChatModel> chats;
+
+    @OneToMany(
+            mappedBy = "advogadoModel",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ReuniaoModel> reunioes;
 
     @Column(name = "criado_em")
     private LocalDateTime criadoEm = LocalDateTime.now();
