@@ -7,12 +7,6 @@ import { GetAllChatsResponse } from "@/types/getAllChatsResponse";
 import { Cliente } from "@/types/cliente";
 
 export const getAllChatsByClienteId = async (): Promise<Chat[] | null> => {
-  const storedChat = localStorage.getItem("Chats");
-
-  if (storedChat) {
-    return JSON.parse(storedChat) as Chat[];
-  }
-
   const clienteStr = localStorage.getItem("Cliente");
 
   if (!clienteStr) {
@@ -22,15 +16,26 @@ export const getAllChatsByClienteId = async (): Promise<Chat[] | null> => {
   const cliente = JSON.parse(clienteStr) as Cliente;
   const clienteId = cliente.idCliente;
 
-  const response = await api.get<ApiResponse<Chat[]>>(
-    `/chat/getAllChatsByUserId/${clienteId}`
-  );
+  try {
+    const response = await api.get<ApiResponse<Chat[]>>(
+      `/chat/getAllChatsByUserId/${clienteId}`
+    );
 
-  const chats = response.data.Body;
+    const chats = response.data.Body;
 
-  localStorage.setItem("Chats", JSON.stringify(chats));
+    // Sempre atualiza o localStorage com os dados mais recentes do servidor
+    localStorage.setItem("Chats", JSON.stringify(chats));
 
-  return chats;
+    return chats;
+  } catch (error: any) {
+    // Se houver erro, tenta usar o cache do localStorage como fallback
+    const storedChat = localStorage.getItem("Chats");
+    if (storedChat) {
+      console.warn("Erro ao buscar chats do servidor, usando cache local");
+      return JSON.parse(storedChat) as Chat[];
+    }
+    throw error;
+  }
 };
 
 export const getAllChats = async (): Promise<ChatResponse[]> => {

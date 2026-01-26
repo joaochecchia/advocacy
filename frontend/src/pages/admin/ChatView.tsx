@@ -152,8 +152,9 @@ export default function ChatView() {
         });
       },
       (error) => {
-        console.error('Erro ao conectar no WebSocket:', error);
-        toast.error('Erro ao conectar no chat');
+        // Silenciosamente trata erros de conexão (chat pode ter sido deletado)
+        console.warn(`Erro ao conectar WebSocket para chat ${chatId}:`, error);
+        // Não mostra toast de erro para evitar spam quando chats são deletados
       }
     );
 

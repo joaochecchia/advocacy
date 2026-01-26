@@ -3,7 +3,6 @@ import { getApiBaseURL } from "./config";
 
 const isDev = import.meta.env.DEV;
 
-// Usa função centralizada para obter URL da API
 const apiBaseURL = getApiBaseURL();
 
 export const api = axios.create({
@@ -32,10 +31,8 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor de resposta para tratamento de erros
 api.interceptors.response.use(
   (response) => {
-    // Resposta bem-sucedida
     if (isDev) {
       console.debug("[API RESPONSE]", {
         status: response.status,
@@ -46,7 +43,6 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Tratamento de erros
     if (isDev) {
       console.error("[API ERROR]", {
         status: error.response?.status,
@@ -56,16 +52,13 @@ api.interceptors.response.use(
       });
     }
 
-    // Se for erro 401 (não autorizado), limpar token e redirecionar
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
       localStorage.removeItem("userType");
       localStorage.removeItem("email");
-      // Não redirecionar automaticamente aqui, deixar o componente tratar
     }
 
-    // Propaga o erro para ser tratado no componente
     return Promise.reject(error);
   }
 );

@@ -68,12 +68,29 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         const chatsData = await getAllChatsByClienteId();
         setChats(chatsData);
 
-        if (!chatsData.length) return;
+        if (!chatsData || !chatsData.length) return;
 
         setChatAtivo(chatsData[0]);
 
-        const msgs = await getMensagem(chatsData[0].id, 0);
-        setMensagens(msgs);
+        try {
+          const msgs = await getMensagem(chatsData[0].id, 0);
+          setMensagens(msgs);
+        } catch (error) {
+          // Se o chat não existe mais, remove da lista e tenta o próximo
+          console.warn(`Chat ${chatsData[0].id} não encontrado, removendo da lista`);
+          const chatsFiltrados = chatsData.filter(chat => chat.id !== chatsData[0].id);
+          setChats(chatsFiltrados);
+          localStorage.setItem("Chats", JSON.stringify(chatsFiltrados));
+          
+          if (chatsFiltrados.length > 0) {
+            setChatAtivo(chatsFiltrados[0]);
+            const msgs = await getMensagem(chatsFiltrados[0].id, 0);
+            setMensagens(msgs);
+          } else {
+            setChatAtivo(null);
+            setMensagens([]);
+          }
+        }
 
       } catch (e) {
         console.error("Erro ao iniciar chat", e);
@@ -102,22 +119,46 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const stomp = Stomp.over(socket);
     stomp.debug = () => {}; // silencia logs
 
-    stomp.connect({}, () => {
-      stomp.subscribe(
-        `/topics/chat/${chatAtivo.id}`,
-        (message) => {
-          const msg: Mensagem = JSON.parse(message.body);
+    const currentChatId = chatAtivo.id;
 
-          setMensagens((prev) => [...prev, msg]);
-        }
-      );
-    });
+    stomp.connect(
+      {},
+      () => {
+        stomp.subscribe(
+          `/topics/chat/${currentChatId}`,
+          (message) => {
+            const msg: Mensagem = JSON.parse(message.body);
+
+            setMensagens((prev) => [...prev, msg]);
+          }
+        );
+      },
+      (error) => {
+        // Silenciosamente trata erros de conexão (chat pode ter sido deletado)
+        console.warn(`Erro ao conectar WebSocket para chat ${currentChatId}:`, error);
+        // Remove o chat da lista se não conseguir conectar
+        setChats((prevChats) => {
+          if (!prevChats) return null;
+          const chatsFiltrados = prevChats.filter(chat => chat.id !== currentChatId);
+          localStorage.setItem("Chats", JSON.stringify(chatsFiltrados));
+          
+          if (chatsFiltrados.length > 0) {
+            setChatAtivo(chatsFiltrados[0]);
+          } else {
+            setChatAtivo(null);
+          }
+          return chatsFiltrados;
+        });
+      }
+    );
 
     stompClientRef.current = stomp;
 
     return () => {
-      stomp.disconnect(() => {});
-      stompClientRef.current = null;
+      if (stompClientRef.current) {
+        stompClientRef.current.disconnect(() => {});
+        stompClientRef.current = null;
+      }
     };
   }, [chatAtivo]);
 
@@ -126,12 +167,33 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   ======================= */
 
   const carregarMensagens = async (chatId: number, novaPage = page) => {
-    const novas = await getMensagem(chatId, novaPage);
+    try {
+      const novas = await getMensagem(chatId, novaPage);
 
-    if (novaPage === 0) {
-      setMensagens(novas);
-    } else {
-      setMensagens((prev) => [...novas, ...prev]);
+      if (novaPage === 0) {
+        setMensagens(novas);
+      } else {
+        setMensagens((prev) => [...novas, ...prev]);
+      }
+    } catch (error) {
+      // Se o chat não existe mais, remove da lista
+      console.warn(`Chat ${chatId} não encontrado ao carregar mensagens`);
+      if (chats) {
+        const chatsFiltrados = chats.filter(chat => chat.id !== chatId);
+        setChats(chatsFiltrados);
+        localStorage.setItem("Chats", JSON.stringify(chatsFiltrados));
+        
+        if (chatAtivo?.id === chatId) {
+          if (chatsFiltrados.length > 0) {
+            setChatAtivo(chatsFiltrados[0]);
+            const msgs = await getMensagem(chatsFiltrados[0].id, 0);
+            setMensagens(msgs);
+          } else {
+            setChatAtivo(null);
+            setMensagens([]);
+          }
+        }
+      }
     }
   };
 
