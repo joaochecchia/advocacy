@@ -30,8 +30,7 @@ public class ClienteService {
         return Optional.of(ClienteResponse.fromModel(model));
     }
 
-
-    public Optional<ClienteResponse> findClienteById(Long id){
+    public Optional<ClienteResponse> findClienteById(Long id) {
         ClienteModel model = clienteRepository.findById(id)
                 .orElseThrow(() ->
                         new NotFindObjectByIdentifierException(
@@ -41,7 +40,6 @@ public class ClienteService {
 
         return Optional.of(ClienteResponse.fromModel(model));
     }
-
 
     public Optional<ClienteResponse> patchClienteById(Long id, ClienteDTO request) {
         ClienteModel model = clienteRepository.findById(id)
@@ -86,16 +84,20 @@ public class ClienteService {
         return Optional.of(ClienteResponse.fromModel(atualizado));
     }
 
-
-    public Long deleteClienteById(Long id){
-        ClienteModel verificarModel = clienteRepository.findById(id)
+    public Long deleteClienteById(Long id) {
+        ClienteModel cliente = clienteRepository.findById(id)
                 .orElseThrow(() ->
                         new NotFindObjectByIdentifierException(
                                 "Cliente com id " + id + " nao existe."
                         )
                 );
 
-        clienteRepository.deleteById(id);
+        UsuarioModel usuario = cliente.getUsuarioModel();
+
+        usuario.setCliente(null);
+        cliente.setUsuarioModel(null);
+
+        clienteRepository.delete(cliente);
 
         return id;
     }

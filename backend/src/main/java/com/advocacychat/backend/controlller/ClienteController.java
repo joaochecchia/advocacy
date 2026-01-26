@@ -63,7 +63,7 @@ public class ClienteController {
         Long idDeletado = clienteService.deleteClienteById(id);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("Message", "Cliente editado com sucesso.");
+        response.put("Message", "Cliente deletado com sucesso.");
         response.put("Body", "Id do usuario deletado: " + idDeletado);
 
         return ResponseEntity.ok(response);

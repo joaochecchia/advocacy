@@ -1,34 +1,45 @@
-package com.advocacychat.backend.model;
+    package com.advocacychat.backend.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+    import jakarta.persistence.*;
+    import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
+    import java.time.LocalDateTime;
+    import java.util.List;
 
-@Entity
-@Table(name = "cliente")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ClienteModel {
+    @Entity
+    @Table(name = "cliente")
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class ClienteModel {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private UsuarioModel usuarioModel;
+        @OneToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "usuario_id", nullable = false)
+        private UsuarioModel usuarioModel;
 
-    @OneToMany(mappedBy = "clienteModel", cascade = CascadeType.ALL)
-    private List<ChatModel> chats;
+        @OneToMany(
+                mappedBy = "clienteModel",
+                cascade = CascadeType.ALL,
+                orphanRemoval = true
+        )
+        private List<ChatModel> chats;
 
-    @Column(length = 11, nullable = false, unique = true)
-    private String cpf;
+        @OneToMany(
+                mappedBy = "clienteModel",
+                cascade = CascadeType.ALL,
+                orphanRemoval = true
+        )
+        private List<ReuniaoModel> reunioes;
 
-    private String telefone;
+        @Column(length = 11, nullable = false, unique = true)
+        private String cpf;
 
-    @Column(name = "criado_em")
-    private LocalDateTime criadoEm = LocalDateTime.now();
-}
+        private String telefone;
+
+        @Column(name = "criado_em")
+        private LocalDateTime criadoEm = LocalDateTime.now();
+    }
