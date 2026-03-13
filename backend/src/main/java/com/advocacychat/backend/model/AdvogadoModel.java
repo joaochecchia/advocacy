@@ -36,6 +36,10 @@ public class AdvogadoModel {
     )
     private List<ChatModel> chats;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "empresa_id")
+    private EscritorioModel escritorioModel;
+
     @OneToMany(
             mappedBy = "advogadoModel",
             cascade = CascadeType.ALL,

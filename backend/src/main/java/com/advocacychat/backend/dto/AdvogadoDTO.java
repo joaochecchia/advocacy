@@ -15,13 +15,18 @@ public class AdvogadoDTO {
     private Boolean ativo;
     private LocalDateTime criadoEmUsuario;
     private LocalDateTime atualizadoEmUsuario;
+
     private Long idAdvogado;
 
     @NotBlank
-    @Size(min=8, max=10)
+    @Size(min = 8, max = 10)
     private String oab;
 
     @NotBlank
     private String especialidade;
+
     private LocalDateTime criadoEmAdvogado;
+
+    private Long idEscritorio;
+    private String cnpjEscritorio;
 }

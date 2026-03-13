@@ -93,4 +93,23 @@ public class ControllerExceptions {
 
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(UniqueFieldException.class)
+    public ResponseEntity<Map<String, Object>> handleUniqueFieldException(
+            MethodArgumentNotValidException ex
+    ) {
+        Map<String, String> fieldErrors = new HashMap<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                fieldErrors.put(error.getField(), error.getDefaultMessage())
+        );
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Unique field request Error");
+        response.put("fields", fieldErrors);
+
+        return ResponseEntity.badRequest().body(response);
+    }
 }

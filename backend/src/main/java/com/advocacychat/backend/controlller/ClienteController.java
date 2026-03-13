@@ -21,10 +21,6 @@ public class ClienteController {
 
     private final ClienteService clienteService;
 
-    /*
-    private final ChatService chatService;
-    */
-
     @GetMapping("/getClienteByUserId/{id}")
     public ResponseEntity<Map<String, Object>> getClienteByUserId(@PathVariable Long id){
         Optional<ClienteResponse> cliente = clienteService.findClienteByUserId(id);

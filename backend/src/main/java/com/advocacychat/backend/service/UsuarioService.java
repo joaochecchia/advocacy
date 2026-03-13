@@ -1,9 +1,7 @@
 package com.advocacychat.backend.service;
 
 import com.advocacychat.backend.enums.TipoUsuario;
-import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
-import com.advocacychat.backend.exceptions.NullFieldException;
-import com.advocacychat.backend.exceptions.PasswordDontMatchException;
+import com.advocacychat.backend.exceptions.*;
 import com.advocacychat.backend.mapper.UsuarioMapper;
 import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.ClienteModel;
@@ -28,11 +26,26 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    private final ChatService chatService;
-
     private final PasswordEncoder passwordEncoder;
 
     public Optional<UsuarioResponse> registerUser(UsuarioRequest request) {
+
+        if (request.tipoUsuario() == TipoUsuario.CLIENTE && request.clienteDTO() == null) {
+            throw new NullFieldException("ClienteDTO é obrigatório para clientes.");
+        }
+
+        if (request.tipoUsuario() == TipoUsuario.ADVOGADO && request.advogadoDTO() == null) {
+            throw new BusinessRuleException("AdvogadoDTO é obrigatório para advogados.");
+        }
+
+        if (request.tipoUsuario() == TipoUsuario.CLIENTE && request.advogadoDTO() != null) {
+            throw new BusinessRuleException("Cliente não pode possuir AdvogadoDTO.");
+        }
+
+        if(usuarioRepository.existsByEmail(request.email())){
+            throw new UniqueFieldException("Usuario com email: " + request.email() + " ja está cadastrado.");
+        }
+
         UsuarioModel usuarioModel = usuarioMapper.requestToModel(request);
         usuarioModel.setSenhaHash(passwordEncoder.encode(usuarioModel.getSenhaHash()));
 
