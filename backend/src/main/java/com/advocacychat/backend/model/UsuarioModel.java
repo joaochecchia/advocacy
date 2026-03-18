@@ -1,6 +1,6 @@
 package com.advocacychat.backend.model;
 
-import com.advocacychat.backend.enums.TipoUsuario;
+import com.advocacychat.backend.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,7 +11,12 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "usuario")
+@Table(
+        name = "usuarios",
+        indexes = {
+            @Index(name = "idx_usuario_email", columnList = "email")
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,33 +26,15 @@ public class UsuarioModel implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 150, nullable = false)
-    private String nome;
-
-    @Column(length = 150, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "senha_hash", length = 255, nullable = false)
+    @Column(name = "senha_hash")
     private String senhaHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_usuario", nullable = false)
-    private TipoUsuario tipoUsuario;
+    private Role role;
 
-    @Column(nullable = false)
-    private Boolean ativo = true;
-
-    @Column(name = "criado_em")
-    private LocalDateTime criadoEm = LocalDateTime.now();
-
-    @Column(name = "atualizado_em")
-    private LocalDateTime atualizadoEm;
-
-    @OneToOne(mappedBy = "usuarioModel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private AdvogadoModel advogado;
-
-    @OneToOne(mappedBy = "usuarioModel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ClienteModel cliente;
+    private Boolean ativo;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

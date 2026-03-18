@@ -1,38 +1,43 @@
 package com.advocacychat.backend.response;
 
+import com.advocacychat.backend.enums.Role;
 import com.advocacychat.backend.model.AdvogadoModel;
 
-import java.time.LocalDateTime;
-
 public record AdvogadoResponse(
-        Long idUsuario,
-        String nome,
+        Long usuarioId,
         String email,
-        String tipoUsuario,
+        Role role,
         Boolean ativo,
-        LocalDateTime criadoEmUsuario,
-        LocalDateTime atualizadoEmUsuario,
 
-        Long idAdvogado,
+        Long advogadoId,
+        String nome,
         String oab,
-        String especialidade,
-        LocalDateTime criadoEmAdvogado
+        String telefone,
+
+        Long escritorioId,
+        String escritorioNome
 ) {
 
     public static AdvogadoResponse fromModel(AdvogadoModel advogado) {
+        Long escritorioId = null;
+        String escritorioNome = null;
+        if (advogado.getEscritorio() != null) {
+            escritorioId = advogado.getEscritorio().getId();
+            escritorioNome = advogado.getEscritorio().getNomeEscritorio();
+        }
         return new AdvogadoResponse(
-                advogado.getUsuarioModel().getId(),
-                advogado.getUsuarioModel().getNome(),
-                advogado.getUsuarioModel().getEmail(),
-                advogado.getUsuarioModel().getTipoUsuario().name(),
-                advogado.getUsuarioModel().getAtivo(),
-                advogado.getUsuarioModel().getCriadoEm(),
-                advogado.getUsuarioModel().getAtualizadoEm(),
+                advogado.getUsuario() != null ? advogado.getUsuario().getId() : null,
+                advogado.getUsuario() != null ? advogado.getUsuario().getEmail() : null,
+                advogado.getUsuario() != null ? advogado.getUsuario().getRole() : null,
+                advogado.getUsuario() != null ? advogado.getUsuario().getAtivo() : null,
 
                 advogado.getId(),
+                advogado.getNome(),
                 advogado.getOab(),
-                advogado.getEspecialidade(),
-                advogado.getCriadoEm()
+                advogado.getTelefone(),
+
+                escritorioId,
+                escritorioNome
         );
     }
 }

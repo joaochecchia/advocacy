@@ -1,5 +1,7 @@
 package com.advocacychat.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,23 +19,16 @@ public class ChatModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private ClienteModel clienteModel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id")
+    @JsonBackReference
+    private ClienteModel cliente;
 
     @ManyToOne
-    @JoinColumn(name = "advogado_id")
-    private AdvogadoModel advogadoModel;
+    @JoinColumn(name = "escritorio_id")
+    private EscritorioModel escritorio;
 
-    @OneToMany(
-            mappedBy = "chatModel",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<MensagemModel> mensagens;
-
-    private Boolean ativo = true;
-
-    @Column(name = "criado_em")
-    private LocalDateTime criadoEm = LocalDateTime.now();
 }

@@ -1,11 +1,18 @@
 package com.advocacychat.backend.service;
 
-import com.advocacychat.backend.enums.TipoUsuario;
 import com.advocacychat.backend.exceptions.*;
+import com.advocacychat.backend.mapper.AdvogadoMapper;
+import com.advocacychat.backend.mapper.ClienteMapper;
 import com.advocacychat.backend.mapper.UsuarioMapper;
 import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.ClienteModel;
+import com.advocacychat.backend.model.EscritorioModel;
 import com.advocacychat.backend.model.UsuarioModel;
+import com.advocacychat.backend.enums.Role;
+import com.advocacychat.backend.model.AdvogadoModel;
+import com.advocacychat.backend.repository.AdvogadoRepository;
+import com.advocacychat.backend.repository.ClienteRepository;
+import com.advocacychat.backend.repository.EscritorioRepository;
 import com.advocacychat.backend.repository.UsuarioRepository;
 import com.advocacychat.backend.request.AlterarSenhaRequest;
 import com.advocacychat.backend.request.UsuarioRequest;
@@ -26,19 +33,26 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
+    private final EscritorioRepository escritorioRepository;
+
+    private final ClienteRepository clienteRepository;
+    private final AdvogadoRepository advogadoRepository;
+    private final ClienteMapper clienteMapper;
+    private final AdvogadoMapper advogadoMapper;
+
     private final PasswordEncoder passwordEncoder;
 
     public Optional<UsuarioResponse> registerUser(UsuarioRequest request) {
 
-        if (request.tipoUsuario() == TipoUsuario.CLIENTE && request.clienteDTO() == null) {
+        if (request.role() == Role.CLIENTE && request.clienteDTO() == null) {
             throw new NullFieldException("ClienteDTO é obrigatório para clientes.");
         }
 
-        if (request.tipoUsuario() == TipoUsuario.ADVOGADO && request.advogadoDTO() == null) {
+        if (request.role() == Role.ADVOGADO && request.advogadoDTO() == null) {
             throw new BusinessRuleException("AdvogadoDTO é obrigatório para advogados.");
         }
 
-        if (request.tipoUsuario() == TipoUsuario.CLIENTE && request.advogadoDTO() != null) {
+        if (request.role() == Role.CLIENTE && request.advogadoDTO() != null) {
             throw new BusinessRuleException("Cliente não pode possuir AdvogadoDTO.");
         }
 
@@ -49,23 +63,36 @@ public class UsuarioService {
         UsuarioModel usuarioModel = usuarioMapper.requestToModel(request);
         usuarioModel.setSenhaHash(passwordEncoder.encode(usuarioModel.getSenhaHash()));
 
-        if (request.tipoUsuario() == TipoUsuario.CLIENTE) {
+        UsuarioModel novoUsuario = usuarioRepository.save(usuarioModel);
 
-            ClienteModel cliente = usuarioModel.getCliente();
-
-            if (cliente == null) {
-                throw new NullFieldException("Cliente não foi criado pelo mapper");
-            }
+        if (request.role() == Role.CLIENTE) {
+            ClienteModel cliente = clienteMapper.dtoToModel(request.clienteDTO());
+            cliente.setUsuario(novoUsuario);
 
             ChatModel chat = new ChatModel();
-            chat.setClienteModel(cliente);
+            chat.setCliente(cliente);
 
             List<ChatModel> chats = new ArrayList<>();
             chats.add(chat);
             cliente.setChats(chats);
+
+            clienteRepository.save(cliente);
         }
 
-        UsuarioModel novoUsuario = usuarioRepository.save(usuarioModel);
+        if (request.role() == Role.ADVOGADO) {
+            AdvogadoModel advogado = advogadoMapper.dtoToModel(request.advogadoDTO());
+            advogado.setUsuario(novoUsuario);
+
+            if (request.advogadoDTO().getEscritorioId() != null) {
+                EscritorioModel escritorio = escritorioRepository.findById(request.advogadoDTO().getEscritorioId())
+                        .orElseThrow(() -> new NotFindObjectByIdentifierException(
+                                "Escritório com id " + request.advogadoDTO().getEscritorioId() + " não existe."
+                        ));
+                advogado.setEscritorio(escritorio);
+            }
+
+            advogadoRepository.save(advogado);
+        }
 
         return Optional.of(
                 UsuarioResponse.builder()

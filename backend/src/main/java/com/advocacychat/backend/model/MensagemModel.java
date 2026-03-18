@@ -1,6 +1,7 @@
 package com.advocacychat.backend.model;
 
-import com.advocacychat.backend.enums.OrigemMensagem;
+import com.advocacychat.backend.enums.TipoMensagem;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,21 +18,18 @@ public class MensagemModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_id", nullable = false)
-    private ChatModel chatModel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_id")
+    @JsonBackReference
+    private ChatModel chat;
 
     @ManyToOne
-    @JoinColumn(name = "remetente_id", nullable = false)
-    private UsuarioModel remetente;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String conteudo;
+    @JoinColumn(name = "usuario_id")
+    private UsuarioModel usuario;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OrigemMensagem origem;
+    private TipoMensagem tipo;
 
-    @Column(name = "criado_em")
-    private LocalDateTime criadoEm = LocalDateTime.now();
+    @Column(columnDefinition = "TEXT")
+    private String conteudo;
 }

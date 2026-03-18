@@ -1,17 +1,12 @@
 package com.advocacychat.backend.dto;
 
-import com.advocacychat.backend.enums.TipoUsuario;
+import com.advocacychat.backend.enums.Role;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 public class UsuarioDTO {
     private Long id;
-    private String nome;
     private String email;
-    private TipoUsuario tipoUsuario;
+    private Role role;
     private Boolean ativo;
-    private LocalDateTime criadoEm;
-    private LocalDateTime atualizadoEm;
 }

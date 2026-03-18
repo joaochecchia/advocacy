@@ -12,11 +12,10 @@ public class MensagemMapper {
 
         MensagemDTO dto = new MensagemDTO();
         dto.setId(model.getId());
-        dto.setChatId(model.getChatModel() != null ? model.getChatModel().getId() : null);
-        dto.setRemetenteId(model.getRemetente() != null ? model.getRemetente().getId() : null);
+        dto.setChatId(model.getChat() != null ? model.getChat().getId() : null);
+        dto.setUsuarioId(model.getUsuario() != null ? model.getUsuario().getId() : null);
+        dto.setTipo(model.getTipo());
         dto.setConteudo(model.getConteudo());
-        dto.setOrigem(model.getOrigem());
-        dto.setCriadoEm(model.getCriadoEm());
 
         return dto;
     }
@@ -30,18 +29,17 @@ public class MensagemMapper {
         if (dto.getChatId() != null) {
             ChatModel chat = new ChatModel();
             chat.setId(dto.getChatId());
-            model.setChatModel(chat);
+            model.setChat(chat);
         }
 
-        if (dto.getRemetenteId() != null) {
+        if (dto.getUsuarioId() != null) {
             UsuarioModel user = new UsuarioModel();
-            user.setId(dto.getRemetenteId());
-            model.setRemetente(user);
+            user.setId(dto.getUsuarioId());
+            model.setUsuario(user);
         }
 
         model.setConteudo(dto.getConteudo());
-        model.setOrigem(dto.getOrigem());
-        model.setCriadoEm(dto.getCriadoEm());
+        model.setTipo(dto.getTipo());
 
         return model;
     }

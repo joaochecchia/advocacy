@@ -1,41 +1,35 @@
 package com.advocacychat.backend.response;
 
+import com.advocacychat.backend.enums.Role;
 import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.ClienteModel;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public record ClienteResponse(
-        Long idUsuario,
+        Long usuarioId,
         String nome,
         String email,
-        String tipoUsuario,
+        Role role,
         Boolean ativo,
-        LocalDateTime criadoEmUsuario,
-        LocalDateTime atualizadoEmUsuario,
 
-        Long idCliente,
+        Long clienteId,
         String cpf,
         String telefone,
-        LocalDateTime criadoEmCliente,
 
         List<Long> chatIds
 ) {
     public static ClienteResponse fromModel(ClienteModel cliente) {
         return new ClienteResponse(
-                cliente.getUsuarioModel().getId(),
-                cliente.getUsuarioModel().getNome(),
-                cliente.getUsuarioModel().getEmail(),
-                cliente.getUsuarioModel().getTipoUsuario().name(),
-                cliente.getUsuarioModel().getAtivo(),
-                cliente.getUsuarioModel().getCriadoEm(),
-                cliente.getUsuarioModel().getAtualizadoEm(),
+                cliente.getUsuario() != null ? cliente.getUsuario().getId() : null,
+                cliente.getNome(),
+                cliente.getUsuario() != null ? cliente.getUsuario().getEmail() : null,
+                cliente.getUsuario() != null ? cliente.getUsuario().getRole() : null,
+                cliente.getUsuario() != null ? cliente.getUsuario().getAtivo() : null,
 
                 cliente.getId(),
                 cliente.getCpf(),
                 cliente.getTelefone(),
-                cliente.getCriadoEm(),
 
                 cliente.getChats()
                         .stream()

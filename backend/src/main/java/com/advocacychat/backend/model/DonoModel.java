@@ -1,20 +1,16 @@
 package com.advocacychat.backend.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(
-        name = "advogados"
-)
+@Table(name = "donos")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AdvogadoModel {
-
+@NoArgsConstructor
+public class DonoModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,8 +24,5 @@ public class AdvogadoModel {
     private EscritorioModel escritorio;
 
     private String nome;
-
-    private String oab;
-
     private String telefone;
 }

@@ -2,9 +2,8 @@ package com.advocacychat.backend.service;
 
 import com.advocacychat.backend.dto.ChatDTO;
 import com.advocacychat.backend.dto.MensagemDTO;
-import com.advocacychat.backend.enums.OrigemMensagem;
+import com.advocacychat.backend.enums.TipoMensagem;
 import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
-import com.advocacychat.backend.exceptions.NullFieldException;
 import com.advocacychat.backend.exceptions.UnauthorizedRoleException;
 import com.advocacychat.backend.mapper.ChatMapper;
 import com.advocacychat.backend.model.ChatModel;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,21 +75,18 @@ public class ChatService {
     ) {
         MensagemDTO dto = new MensagemDTO();
         dto.setChatId(chatId);
-        dto.setRemetenteId(usuario.id());
+        dto.setUsuarioId(usuario.id());
+        dto.setTipo(TipoMensagem.USUARIO);
         dto.setConteudo(conteudo);
-        dto.setOrigem(OrigemMensagem.valueOf(usuario.tipo()));
-        dto.setCriadoEm(LocalDateTime.now());
         return dto;
     }
 
     public Optional<List<ChatDTO>> getAllChatsByClienteId(Long id){
-        clienteService.findClienteById(id).orElseThrow(() -> new NotFindObjectByIdentifierException("Cliente com id " + id + " nao existe."));
+        clienteService.findClienteById(id).orElseThrow(
+                () -> new NotFindObjectByIdentifierException("Cliente com id " + id + " nao existe.")
+        );
 
-        List<ChatModel> chatModels = chatRepository.findAllByClienteModel_Id(id);
-
-        if(chatModels.isEmpty()){
-            throw new NotFindObjectByIdentifierException("Cliente com id: " + id + "nao possui chats.");
-        }
+        List<ChatModel> chatModels = chatRepository.findAllByCliente_Id(id);
 
         return Optional.of(
                 chatModels.stream()
@@ -110,11 +105,9 @@ public class ChatService {
 
                     return new ChatResponse(
                             chatDTO,
-                            chat.getClienteModel().getId(),
-                            chat.getClienteModel().getUsuarioModel().getNome(),
-                            chat.getAtivo(),
-                            mensagensService.buscarUltimaMensagemPorChatId(chat.getId()),
-                            mensagensService.buscarDataUltimaMensagem(chat.getId())
+                            chat.getCliente().getId(),
+                            chat.getCliente().getNome(),
+                            mensagensService.buscarUltimaMensagemPorChatId(chat.getId())
                     );
                 })
                 .toList();
@@ -132,10 +125,9 @@ public class ChatService {
 
         MensagemDTO dto = new MensagemDTO();
         dto.setChatId(chatId);
-        dto.setRemetenteId(usuario.id());
+        dto.setUsuarioId(usuario.id());
+        dto.setTipo(TipoMensagem.GPT);
         dto.setConteudo(respostaGPT);
-        dto.setOrigem(OrigemMensagem.GPT);
-        dto.setCriadoEm(LocalDateTime.now());
 
         mensagensService.registrarMensagem(dto);
 
@@ -153,8 +145,11 @@ public class ChatService {
 
         if (usuario.tipo().equals("CLIENTE")) {
 
+            System.out.println("JWT ID: " + usuario.id());
+            System.out.println("ChatID: " + chatId);
+
             boolean pertenceAoCliente = chatRepository
-                    .existsByIdAndClienteModel_UsuarioModel_Id(chatId, usuario.id());
+                    .existsByIdAndCliente_Usuario_Id(chatId, usuario.id());
             System.out.println("ESTIVE AQUI 1: " + pertenceAoCliente);
 
             if (!pertenceAoCliente) {

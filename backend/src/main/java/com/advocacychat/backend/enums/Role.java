@@ -1,7 +1,8 @@
 package com.advocacychat.backend.enums;
 
-public enum OrigemMensagem {
-    CLIENTE,
+public enum Role {
+    ADMIN,
+    DONO,
     ADVOGADO,
-    GPT
+    CLIENTE
 }

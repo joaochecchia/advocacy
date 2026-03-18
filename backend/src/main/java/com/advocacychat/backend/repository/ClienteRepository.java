@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<ClienteModel, Long> {
-    Optional<ClienteModel> findByUsuarioModel_Id(Long usuarioId);
+    Optional<ClienteModel> findByUsuario_Id(Long usuarioId);
 }

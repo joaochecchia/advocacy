@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface AdvogadoRepository extends JpaRepository<AdvogadoModel, Long> {
-    Optional<AdvogadoModel> findByUsuarioModel_Id(Long usuarioId);
+    Optional<AdvogadoModel> findByUsuario_Id(Long usuarioId);
 }

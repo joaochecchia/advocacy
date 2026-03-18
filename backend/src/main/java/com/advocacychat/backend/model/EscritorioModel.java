@@ -11,7 +11,8 @@ import java.util.List;
 @Table(
         name = "escritorio",
         indexes = {
-                @Index(name = "idx_escritorio_cnpj", columnList = "escritorio_cnpj")
+                @Index(name = "idx_escritorio_cnpj", columnList = "cnpj_escritorio"),
+                @Index(name = "idx_escritorio_nome", columnList = "nome_escritorio")
         }
 )
 @AllArgsConstructor
@@ -23,13 +24,13 @@ public class EscritorioModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "nome_escritório")
-    String nomeEscritório;
+    @Column(name = "nome_escritorio")
+    String nomeEscritorio;
 
     @Column(name = "nome_dono")
     String nomeDono;
 
-    @Column(name = "escritorio_cnpj" ,nullable = false)
+    @Column(name = "cnpj_escritorio" ,nullable = false)
     String cnpj;
 
     @Column(name = "numero_advogados")

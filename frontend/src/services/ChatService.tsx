@@ -4,17 +4,15 @@ import { Chat } from "@/types/Chat";
 import { ApiResponse } from "@/types/apiResponse";
 import { ChatResponse } from "@/types/chatResponse";
 import { GetAllChatsResponse } from "@/types/getAllChatsResponse";
-import { Cliente } from "@/types/cliente";
+import { getCliente } from "@/services/ClienteService";
 
 export const getAllChatsByClienteId = async (): Promise<Chat[] | null> => {
-  const clienteStr = localStorage.getItem("Cliente");
+  const cliente = await getCliente();
+  const clienteId = cliente?.idCliente;
 
-  if (!clienteStr) {
-    throw new Error("Cliente não encontrado no localStorage");
+  if (!clienteId) {
+    throw new Error("Cliente inválido: idCliente não encontrado");
   }
-
-  const cliente = JSON.parse(clienteStr) as Cliente;
-  const clienteId = cliente.idCliente;
 
   try {
     const response = await api.get<ApiResponse<Chat[]>>(

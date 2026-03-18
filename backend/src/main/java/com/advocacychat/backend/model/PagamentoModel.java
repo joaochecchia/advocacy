@@ -1,9 +1,12 @@
 package com.advocacychat.backend.model;
 
+import com.advocacychat.backend.enums.MetodoPagamento;
 import com.advocacychat.backend.enums.StatusPagamento;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,39 +20,20 @@ public class PagamentoModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private ClienteModel clienteModel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assinatura_id")
+    @JsonBackReference
+    private AssinaturaModel assinatura;
 
-    @ManyToOne
-    @JoinColumn(name = "plano_id", nullable = false)
-    private PlanoAssinaturaModel plano;
+    private String pagarmeTransaction;
 
-    @Column(nullable = false)
-    private String gateway;
-
-    @Column(name = "gateway_customer_id")
-    private String gatewayCustomerId;
-
-    @Column(name = "payment_method_token")
-    private String paymentMethodToken;
-
-    @Column(name = "referencia_gateway")
-    private String referenciaGateway;
+    private BigDecimal valor;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status_pagamento")
-    private StatusPagamento statusPagamento = StatusPagamento.PENDENTE;
+    private StatusPagamento status;
 
-    @Column(name = "data_pagamento")
-    private LocalDateTime dataPagamento;
+    @Enumerated(EnumType.STRING)
+    private MetodoPagamento metodo;
 
-    @Column(name = "data_proxima_cobranca")
-    private LocalDateTime dataProximaCobranca;
-
-    @Column(nullable = false)
-    private Double valor;
-
-    @Column(name = "criado_em")
-    private LocalDateTime criadoEm = LocalDateTime.now();
+    private LocalDateTime paidAt;
 }

@@ -4,7 +4,6 @@ import com.advocacychat.backend.dto.ClienteDTO;
 import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.ClienteModel;
 import com.advocacychat.backend.model.UsuarioModel;
-import com.advocacychat.backend.enums.TipoUsuario;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,13 +14,13 @@ public class ClienteMapper {
 
         ClienteDTO dto = new ClienteDTO();
 
-        dto.setIdCliente(model.getId());
+        dto.setId(model.getId());
+        dto.setNome(model.getNome());
         dto.setCpf(model.getCpf());
         dto.setTelefone(model.getTelefone());
-        dto.setCriadoEmCliente(model.getCriadoEm());
 
         if (model.getChats() != null && !model.getChats().isEmpty()) {
-            dto.setIdChat(
+            dto.setChatIds(
                     model.getChats()
                             .stream()
                             .map(ChatModel::getId)
@@ -29,19 +28,12 @@ public class ClienteMapper {
             );
         }
 
-        UsuarioModel usuario = model.getUsuarioModel();
-        if (usuario != null) {
-            dto.setIdUsuario(usuario.getId());
-            dto.setNome(usuario.getNome());
-            dto.setEmail(usuario.getEmail());
-            dto.setTipoUsuario(
-                    usuario.getTipoUsuario() != null
-                            ? usuario.getTipoUsuario().name()
-                            : null
-            );
-            dto.setAtivo(usuario.getAtivo());
-            dto.setCriadoEmUsuario(usuario.getCriadoEm());
-            dto.setAtualizadoEmUsuario(usuario.getAtualizadoEm());
+        if (model.getUsuario() != null) {
+            dto.setUsuarioId(model.getUsuario().getId());
+        }
+
+        if (model.getEscritorio() != null) {
+            dto.setEscritorioId(model.getEscritorio().getId());
         }
 
         return dto;
@@ -52,39 +44,15 @@ public class ClienteMapper {
 
         ClienteModel model = new ClienteModel();
 
-        model.setId(dto.getIdCliente());
+        model.setId(dto.getId());
+        model.setNome(dto.getNome());
         model.setCpf(dto.getCpf());
         model.setTelefone(dto.getTelefone());
 
-        boolean hasUsuarioData =
-                dto.getIdUsuario() != null ||
-                        dto.getNome() != null ||
-                        dto.getEmail() != null ||
-                        dto.getTipoUsuario() != null ||
-                        dto.getAtivo() != null ||
-                        dto.getCriadoEmUsuario() != null ||
-                        dto.getAtualizadoEmUsuario() != null;
-
-        if (hasUsuarioData) {
+        if (dto.getUsuarioId() != null) {
             UsuarioModel usuario = new UsuarioModel();
-
-            usuario.setId(dto.getIdUsuario());
-            usuario.setNome(dto.getNome());
-            usuario.setEmail(dto.getEmail());
-            usuario.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : Boolean.TRUE);
-
-            if (dto.getTipoUsuario() != null) {
-                try {
-                    usuario.setTipoUsuario(TipoUsuario.valueOf(dto.getTipoUsuario()));
-                } catch (IllegalArgumentException ignored) {
-                    usuario.setTipoUsuario(null);
-                }
-            }
-
-            usuario.setCriadoEm(dto.getCriadoEmUsuario());
-            usuario.setAtualizadoEm(dto.getAtualizadoEmUsuario());
-
-            model.setUsuarioModel(usuario);
+            usuario.setId(dto.getUsuarioId());
+            model.setUsuario(usuario);
         }
 
         return model;

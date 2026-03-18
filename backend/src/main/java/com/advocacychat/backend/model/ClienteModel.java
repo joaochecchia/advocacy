@@ -1,5 +1,6 @@
     package com.advocacychat.backend.model;
 
+    import com.fasterxml.jackson.annotation.JsonManagedReference;
     import jakarta.persistence.*;
     import lombok.*;
 
@@ -7,7 +8,7 @@
     import java.util.List;
 
     @Entity
-    @Table(name = "cliente")
+    @Table(name = "clientes")
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -17,29 +18,19 @@
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @OneToOne(cascade = CascadeType.ALL)
-        @JoinColumn(name = "usuario_id", nullable = false)
-        private UsuarioModel usuarioModel;
+        @OneToOne
+        @JoinColumn(name = "usuario_id")
+        private UsuarioModel usuario;
 
-        @OneToMany(
-                mappedBy = "clienteModel",
-                cascade = CascadeType.ALL,
-                orphanRemoval = true
-        )
-        private List<ChatModel> chats;
+        @ManyToOne
+        @JoinColumn(name = "escritorio_id")
+        private EscritorioModel escritorio;
 
-        @OneToMany(
-                mappedBy = "clienteModel",
-                cascade = CascadeType.ALL,
-                orphanRemoval = true
-        )
-        private List<ReuniaoModel> reunioes;
-
-        @Column(length = 11, nullable = false, unique = true)
+        private String nome;
+        private String telefone;
         private String cpf;
 
-        private String telefone;
-
-        @Column(name = "criado_em")
-        private LocalDateTime criadoEm = LocalDateTime.now();
+        @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+        @JsonManagedReference
+        private List<ChatModel> chats;
     }

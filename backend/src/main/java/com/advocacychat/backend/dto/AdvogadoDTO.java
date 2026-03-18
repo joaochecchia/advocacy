@@ -4,29 +4,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 public class AdvogadoDTO {
-    private Long idUsuario;
-    private String nome;
-    private String email;
-    private String tipoUsuario;
-    private Boolean ativo;
-    private LocalDateTime criadoEmUsuario;
-    private LocalDateTime atualizadoEmUsuario;
+    private Long id;
+    private Long usuarioId;
+    private Long escritorioId;
 
-    private Long idAdvogado;
+    @NotBlank
+    private String nome;
 
     @NotBlank
     @Size(min = 8, max = 10)
     private String oab;
 
-    @NotBlank
-    private String especialidade;
-
-    private LocalDateTime criadoEmAdvogado;
-
-    private Long idEscritorio;
-    private String cnpjEscritorio;
+    private String telefone;
 }

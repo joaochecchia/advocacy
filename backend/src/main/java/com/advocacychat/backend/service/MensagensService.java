@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +33,7 @@ public class MensagensService {
     }
 
     public Optional<List<MensagemDTO>> buscarMensagensPorChatId(Long chatId){
-        Optional<List<MensagemModel>> mensagens = mensagensRepository.findAllByChatModel_Id(chatId);
+        Optional<List<MensagemModel>> mensagens = mensagensRepository.findAllByChat_Id(chatId);
 
         return Optional.of(mensagens.get().stream()
                 .map(mensagemMapper::modelToDto)
@@ -56,7 +55,7 @@ public class MensagensService {
         );
 
         Page<MensagemModel> mensagensPage =
-                mensagensRepository.findByChatModel_Id(chatId, pageable);
+                mensagensRepository.findByChat_Id(chatId, pageable);
 
         List<MensagemModel> mensagens =
                 new ArrayList<>(mensagensPage.getContent());
@@ -70,15 +69,8 @@ public class MensagensService {
 
     public String buscarUltimaMensagemPorChatId(Long chatId) {
         return mensagensRepository
-                .findFirstByChatModelIdOrderByCriadoEmDesc(chatId)
+                .findFirstByChat_IdOrderByIdDesc(chatId)
                 .map(m -> m.getConteudo())
-                .orElse(null);
-    }
-
-    public LocalDateTime buscarDataUltimaMensagem(Long chatId) {
-        return mensagensRepository
-                .findFirstByChatModelIdOrderByCriadoEmDesc(chatId)
-                .map(m -> m.getCriadoEm())
                 .orElse(null);
     }
 

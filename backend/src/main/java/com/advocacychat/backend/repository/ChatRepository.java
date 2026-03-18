@@ -8,9 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ChatRepository extends JpaRepository<ChatModel, Long> {
-    boolean existsByIdAndClienteModel_UsuarioModel_Id(Long chatId, Long usuarioId);
+    boolean existsByIdAndCliente_Usuario_Id(Long chatId, Long usuarioId);
 
-    List<ChatModel> findAllByClienteModel_Id(Long id);
-
-    List<ChatModel> findAllByAdvogadoModel_Id(Long advogadoId);
+    List<ChatModel> findAllByCliente_Id(Long id);
 }

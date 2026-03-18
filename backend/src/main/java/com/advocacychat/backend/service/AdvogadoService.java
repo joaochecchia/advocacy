@@ -1,38 +1,31 @@
 package com.advocacychat.backend.service;
 
 import com.advocacychat.backend.dto.AdvogadoDTO;
-import com.advocacychat.backend.enums.TipoUsuario;
 import com.advocacychat.backend.exceptions.NotFindObjectByIdentifierException;
-import com.advocacychat.backend.mapper.AdvogadoMapper;
 import com.advocacychat.backend.model.AdvogadoModel;
-import com.advocacychat.backend.model.ChatModel;
-import com.advocacychat.backend.model.UsuarioModel;
+import com.advocacychat.backend.model.EscritorioModel;
 import com.advocacychat.backend.repository.AdvogadoRepository;
-import com.advocacychat.backend.repository.ChatRepository;
+import com.advocacychat.backend.repository.EscritorioRepository;
 import com.advocacychat.backend.repository.MensagensRepository;
 import com.advocacychat.backend.response.AdvogadoResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AdvogadoService {
 
-    private final AdvogadoMapper advogadoMapper;
-
     private final AdvogadoRepository advogadoRepository;
+
+    private final EscritorioRepository escritorioRepository;
 
     private final MensagensRepository mensagensRepository;
 
-    private final ChatRepository chatRepository;
-
     public Optional<AdvogadoResponse> findAdvogadoByUserId(Long id){
-        Optional<AdvogadoModel> model = advogadoRepository.findByUsuarioModel_Id(id);
+        Optional<AdvogadoModel> model = advogadoRepository.findByUsuario_Id(id);
 
         if(model.isEmpty()){
             throw new NotFindObjectByIdentifierException("Advogado com id " + id + " nao existe.");
@@ -58,37 +51,25 @@ public class AdvogadoService {
                         "Advogado com id " + id + " nao existe."
                 ));
 
+        if (request.getNome() != null) {
+            model.setNome(request.getNome());
+        }
+
         if (request.getOab() != null) {
             model.setOab(request.getOab());
         }
 
-        if (request.getEspecialidade() != null) {
-            model.setEspecialidade(request.getEspecialidade());
+        if (request.getTelefone() != null) {
+            model.setTelefone(request.getTelefone());
         }
 
-        if (request.getCriadoEmAdvogado() != null) {
-            model.setCriadoEm(request.getCriadoEmAdvogado());
+        if (request.getEscritorioId() != null) {
+            EscritorioModel escritorio = escritorioRepository.findById(request.getEscritorioId())
+                    .orElseThrow(() -> new NotFindObjectByIdentifierException(
+                            "Escritório com id " + request.getEscritorioId() + " não existe."
+                    ));
+            model.setEscritorio(escritorio);
         }
-
-        UsuarioModel usuario = model.getUsuarioModel();
-
-        if (request.getNome() != null) {
-            usuario.setNome(request.getNome());
-        }
-
-        if (request.getEmail() != null) {
-            usuario.setEmail(request.getEmail());
-        }
-
-        if (request.getTipoUsuario() != null) {
-            usuario.setTipoUsuario(TipoUsuario.valueOf(request.getTipoUsuario()));
-        }
-
-        if (request.getAtivo() != null) {
-            usuario.setAtivo(request.getAtivo());
-        }
-
-        usuario.setAtualizadoEm(LocalDateTime.now());
 
         AdvogadoModel atualizado = advogadoRepository.save(model);
 
@@ -106,15 +87,9 @@ public class AdvogadoService {
                         )
                 );
 
-        UsuarioModel usuario = advogado.getUsuarioModel();
-        Long usuarioId = usuario.getId();
-
-        List<ChatModel> chats = chatRepository.findAllByAdvogadoModel_Id(id);
-
-        mensagensRepository.deleteAllByRemetente_Id(usuarioId);
-
-        if (chats != null && !chats.isEmpty()) {
-            chatRepository.deleteAll(chats);
+        Long usuarioId = advogado.getUsuario() != null ? advogado.getUsuario().getId() : null;
+        if (usuarioId != null) {
+            mensagensRepository.deleteAllByUsuario_Id(usuarioId);
         }
 
         advogadoRepository.delete(advogado);

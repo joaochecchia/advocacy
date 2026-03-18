@@ -6,6 +6,7 @@ export interface Cliente {
   idUsuario: number
   nome: string
   email: string
+  // No backend vem como `role` (ex: "CLIENTE"/"ADVOGADO")
   tipoUsuario: string
   ativo: boolean
   criadoEmUsuario: string | null
