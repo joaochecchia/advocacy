@@ -11,7 +11,7 @@ import SockJS from 'sockjs-client';
 import Stomp, { Client } from 'stompjs';
 
 import { getMensagem } from '@/services/MessagemService';
-import { Mensagem, OrigemMensagem } from '@/types/mensagens';
+import { Mensagem, TipoMensagem } from '@/types/mensagens';
 import { getApiBaseURL } from '@/lib/config';
 
 interface Message {
@@ -61,15 +61,15 @@ export default function ChatView() {
   ======================= */
   const converterMensagem = (msg: Mensagem): Message => {
     let sender: 'client' | 'admin' = 'client';
-    if (msg.origem === 'ADVOGADO' || msg.origem === 'GPT') {
+    if (msg.tipo === 'SISTEMA' || msg.tipo === 'GPT') {
       sender = 'admin';
-    } else if (msg.origem === 'CLIENTE') {
+    } else if (msg.tipo === 'USUARIO') {
       sender = 'client';
     }
 
     let timestamp: Date;
-    if (msg.criadoEm) {
-      timestamp = new Date(msg.criadoEm);
+    if (msg.dataCriacao) {
+      timestamp = new Date(msg.dataCriacao);
       if (isNaN(timestamp.getTime())) {
         timestamp = new Date();
       }

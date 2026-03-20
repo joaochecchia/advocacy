@@ -4,6 +4,7 @@ import com.advocacychat.backend.enums.Role;
 import com.advocacychat.backend.model.ChatModel;
 import com.advocacychat.backend.model.ClienteModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record ClienteResponse(
@@ -16,6 +17,9 @@ public record ClienteResponse(
         Long clienteId,
         String cpf,
         String telefone,
+
+        LocalDateTime dataCriacao,
+        LocalDateTime dataAtualizacao,
 
         List<Long> chatIds
 ) {
@@ -30,6 +34,8 @@ public record ClienteResponse(
                 cliente.getId(),
                 cliente.getCpf(),
                 cliente.getTelefone(),
+                cliente.getUsuario() != null ? cliente.getUsuario().getDataCriacao() : null,
+                cliente.getUsuario() != null ? cliente.getUsuario().getDataAtualizacao(): null,
 
                 cliente.getChats()
                         .stream()

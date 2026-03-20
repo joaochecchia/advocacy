@@ -15,6 +15,7 @@ public class ChatMapper {
         ChatDTO dto = new ChatDTO();
         dto.setId(model.getId());
         dto.setClienteId(model.getCliente() != null ? model.getCliente().getId() : null);
+        dto.setDataCriacao(model.getDataCriacao() != null ? model.getDataCriacao() : null);
         dto.setEscritorioId(model.getEscritorio() != null ? model.getEscritorio().getId() : null);
 
         return dto;
@@ -31,6 +32,8 @@ public class ChatMapper {
             c.setId(dto.getClienteId());
             model.setCliente(c);
         }
+
+        model.setDataCriacao(dto.getDataCriacao() != null ? dto.getDataCriacao() : null);
 
         if (dto.getEscritorioId() != null) {
             EscritorioModel e = new EscritorioModel();

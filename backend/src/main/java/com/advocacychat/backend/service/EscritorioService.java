@@ -63,7 +63,6 @@ public class EscritorioService {
         }
 
         if (request.getCnpj() != null) {
-            // se mudou CNPJ, checa unicidade
             if (!request.getCnpj().equals(model.getCnpj())
                     && escritorioRepository.existsByCnpj(request.getCnpj())) {
                 throw new UniqueFieldException("Escritório com CNPJ " + request.getCnpj() + " já está cadastrado.");

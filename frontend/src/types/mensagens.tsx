@@ -1,10 +1,10 @@
-export type OrigemMensagem = "CLIENTE" | "ADVOGADO" | "GPT";
+export type TipoMensagem = "USUARIO" | "SISTEMA" | "GPT";
 
 export interface Mensagem {
   id: number;
   chatId: number;
-  remetenteId: number;
+  UsuarioId: number;
+  tipo: TipoMensagem;
   conteudo: string;
-  origem: OrigemMensagem;
-  criadoEm: string;
+  dataCriacao: string;
 }

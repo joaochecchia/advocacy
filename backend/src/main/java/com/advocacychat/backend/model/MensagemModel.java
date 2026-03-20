@@ -4,6 +4,7 @@ import com.advocacychat.backend.enums.TipoMensagem;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -32,4 +33,8 @@ public class MensagemModel {
 
     @Column(columnDefinition = "TEXT")
     private String conteudo;
+
+    @CreationTimestamp
+    @Column(name = "data_craicao", updatable = false)
+    LocalDateTime dataCriacao;
 }

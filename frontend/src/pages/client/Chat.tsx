@@ -207,7 +207,7 @@ export default function Chat() {
           >
             {mensagens.map((mensagem, index) => {
               const isCliente =
-                mensagem.origem === "CLIENTE";
+                mensagem.tipo === "USUARIO";
 
               return (
                 <div
@@ -241,10 +241,10 @@ export default function Chat() {
                   >
                     <p>{mensagem.conteudo}</p>
 
-                    {mensagem.criadoEm && (
+                    {mensagem.dataCriacao && (
                       <p className="text-xs mt-2 opacity-70">
                         {new Date(
-                          mensagem.criadoEm
+                          mensagem.dataCriacao
                         ).toLocaleTimeString("pt-BR", {
                           hour: "2-digit",
                           minute: "2-digit",

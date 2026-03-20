@@ -16,6 +16,7 @@ public class MensagemMapper {
         dto.setUsuarioId(model.getUsuario() != null ? model.getUsuario().getId() : null);
         dto.setTipo(model.getTipo());
         dto.setConteudo(model.getConteudo());
+        dto.setDataCriacao(model.getDataCriacao() != null ? model.getDataCriacao() : null);
 
         return dto;
     }
@@ -38,8 +39,11 @@ public class MensagemMapper {
             model.setUsuario(user);
         }
 
-        model.setConteudo(dto.getConteudo());
         model.setTipo(dto.getTipo());
+
+        model.setConteudo(dto.getConteudo());
+
+        model.setDataCriacao(dto.getDataCriacao() != null ? dto.getDataCriacao() : null);
 
         return model;
     }
