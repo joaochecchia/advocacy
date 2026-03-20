@@ -24,6 +24,7 @@ type UserType = "admin" | "client";
 interface User {
   id: number;
   email: string;
+  nome: string; 
   type: UserType;
 }
 
@@ -40,7 +41,9 @@ interface AuthContextType {
 ======================= */
 
 interface JwtPayload {
-  sub: string; // email
+  sub: string;
+  usuarioId: number;
+  nomeUsuario: string;
   tipoUsuario: "ADVOGADO" | "CLIENTE";
   exp: number;
   iat: number;
@@ -83,21 +86,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       decoded.tipoUsuario === "ADVOGADO" ? "admin" : "client";
 
     const userData: User = {
-      id,
-      email,
+      id: decoded.usuarioId || id, 
+      email: decoded.sub || email,
+      nome: decoded.nomeUsuario || "",
       type: userType,
     };
 
-    // Persistência
     localStorage.setItem("token", token); 
-    localStorage.setItem("userId", String(id));
+    localStorage.setItem("userId", String(userData.id));
     localStorage.setItem("userType", userType);
-    localStorage.setItem("email", email);
+    localStorage.setItem("email", userData.email);
+    localStorage.setItem("userName", userData.nome); 
 
     setUser(userData);
 
-    // Redirect - Busca dados do usuário de forma não-bloqueante
-    // Se a busca falhar, o usuário ainda pode acessar o sistema
     try {
       if (userType === "admin") {
         try {
@@ -105,7 +107,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.log("Dados do advogado:", advogado);
         } catch (error) {
           console.warn("Erro ao buscar dados do advogado:", error);
-          // Continua mesmo se falhar - dados podem ser buscados depois
         }
         navigate("/admin/dashboard");
       } else {
@@ -115,14 +116,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.log("Dados do cliente:", cliente);
         } catch (error) {
           console.warn("Erro ao buscar dados do cliente:", error);
-          // Continua mesmo se falhar - dados podem ser buscados depois
         }
         navigate("/client/chat");
       }
     } catch (error) {
-      // Se houver erro no navigate, ainda considera login bem-sucedido
       console.error("Erro durante redirecionamento:", error);
-      // Navegação de fallback
       if (userType === "admin") {
         navigate("/admin/dashboard");
       } else {
@@ -150,11 +148,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const userType = localStorage.getItem("userType") as UserType | null;
     const userId = localStorage.getItem("userId");
     const email = localStorage.getItem("email");
+    const nome = localStorage.getItem("userName"); 
 
     if (token && userType && userId) {
       setUser({
         id: Number(userId),
         email: email || "",
+        nome: nome || "", 
         type: userType,
       });
     }

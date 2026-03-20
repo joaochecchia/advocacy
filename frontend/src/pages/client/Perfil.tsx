@@ -37,7 +37,7 @@ export default function Perfil() {
             <CardContent className="flex flex-col items-center space-y-4">
               <Avatar className="w-32 h-32">
                 <AvatarFallback className="text-3xl bg-primary text-primary-foreground">
-                  {user?.name?.[0] || 'U'}
+                  {user?.nome?.[0] || 'U'}
                 </AvatarFallback>
               </Avatar>
               <Button variant="outline" size="sm">
@@ -56,7 +56,7 @@ export default function Perfil() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">Nome Completo</Label>
-                    <Input id="name" defaultValue={user?.name} required />
+                    <Input id="name" defaultValue={user?.nome} required />
                   </div>
                   <div>
                     <Label htmlFor="email">Email</Label>
