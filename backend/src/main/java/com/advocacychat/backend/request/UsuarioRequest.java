@@ -1,7 +1,9 @@
 package com.advocacychat.backend.request;
 
+import com.advocacychat.backend.dto.AdminDTO;
 import com.advocacychat.backend.dto.AdvogadoDTO;
 import com.advocacychat.backend.dto.ClienteDTO;
+import com.advocacychat.backend.dto.DonoDTO;
 import com.advocacychat.backend.enums.Role;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -31,7 +33,14 @@ public record UsuarioRequest(
         Boolean ativo,
 
         @Valid
+        AdminDTO adminDTO,
+
+        @Valid
+        DonoDTO donoDTO,
+
+        @Valid
         AdvogadoDTO advogadoDTO,
 
         @Valid
-        ClienteDTO clienteDTO) { }
+        ClienteDTO clienteDTO
+) { }

@@ -1,19 +1,10 @@
 package com.advocacychat.backend.service;
 
 import com.advocacychat.backend.exceptions.*;
-import com.advocacychat.backend.mapper.AdvogadoMapper;
-import com.advocacychat.backend.mapper.ClienteMapper;
-import com.advocacychat.backend.mapper.UsuarioMapper;
-import com.advocacychat.backend.model.ChatModel;
-import com.advocacychat.backend.model.ClienteModel;
-import com.advocacychat.backend.model.EscritorioModel;
-import com.advocacychat.backend.model.UsuarioModel;
+import com.advocacychat.backend.mapper.*;
+import com.advocacychat.backend.model.*;
 import com.advocacychat.backend.enums.Role;
-import com.advocacychat.backend.model.AdvogadoModel;
-import com.advocacychat.backend.repository.AdvogadoRepository;
-import com.advocacychat.backend.repository.ClienteRepository;
-import com.advocacychat.backend.repository.EscritorioRepository;
-import com.advocacychat.backend.repository.UsuarioRepository;
+import com.advocacychat.backend.repository.*;
 import com.advocacychat.backend.request.AlterarSenhaRequest;
 import com.advocacychat.backend.request.UsuarioRequest;
 import com.advocacychat.backend.response.UsuarioResponse;
@@ -35,8 +26,13 @@ public class UsuarioService {
 
     private final EscritorioRepository escritorioRepository;
 
+    private final AdminRepository adminRepository;
+    private final DonoRepository donoRepository;
     private final ClienteRepository clienteRepository;
     private final AdvogadoRepository advogadoRepository;
+
+    private final AdminMapper adminMapper;
+    private final DonoMapper donoMapper;
     private final ClienteMapper clienteMapper;
     private final AdvogadoMapper advogadoMapper;
 
@@ -64,6 +60,28 @@ public class UsuarioService {
         usuarioModel.setSenhaHash(passwordEncoder.encode(usuarioModel.getSenhaHash()));
 
         UsuarioModel novoUsuario = usuarioRepository.save(usuarioModel);
+
+        if(request.role() == Role.ADMIN){
+            AdminModel admin = adminMapper.dtoToModel(request.adminDTO());
+            admin.setUsuario(novoUsuario);
+
+            adminRepository.save(admin);
+        }
+
+        if(request.role() == Role.DONO){
+            DonoModel dono = donoMapper.dtoToModel(request.donoDTO());
+            dono.setUsuario(novoUsuario);
+
+            if (request.donoDTO().getEscritorioId() != null) {
+                EscritorioModel escritorio = escritorioRepository.findById(request.donoDTO().getEscritorioId())
+                        .orElseThrow(() -> new NotFindObjectByIdentifierException(
+                                "Escritório com id " + request.donoDTO().getEscritorioId() + " não existe."
+                        ));
+                dono.setEscritorio(escritorio);
+            }
+
+            donoRepository.save(dono);
+        }
 
         if (request.role() == Role.CLIENTE) {
             ClienteModel cliente = clienteMapper.dtoToModel(request.clienteDTO());
