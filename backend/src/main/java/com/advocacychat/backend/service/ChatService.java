@@ -106,7 +106,7 @@ public class ChatService {
                     return new ChatResponse(
                             chatDTO,
                             chat.getCliente().getId(),
-                            chat.getCliente().getNome(),
+                            chat.getCliente().getUsuario().getNome(),
                             mensagensService.buscarUltimaMensagemPorChatId(chat.getId())
                     );
                 })

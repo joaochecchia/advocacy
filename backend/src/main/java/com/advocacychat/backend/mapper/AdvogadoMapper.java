@@ -14,7 +14,6 @@ public class AdvogadoMapper {
         AdvogadoDTO dto = new AdvogadoDTO();
 
         dto.setId(model.getId());
-        dto.setNome(model.getNome());
         dto.setOab(model.getOab());
         dto.setTelefone(model.getTelefone());
 
@@ -35,7 +34,6 @@ public class AdvogadoMapper {
         AdvogadoModel model = new AdvogadoModel();
 
         model.setId(dto.getId());
-        model.setNome(dto.getNome());
         model.setOab(dto.getOab());
         model.setTelefone(dto.getTelefone());
 

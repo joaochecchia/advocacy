@@ -26,7 +26,6 @@
         @JoinColumn(name = "escritorio_id")
         private EscritorioModel escritorio;
 
-        private String nome;
         private String telefone;
         private String cpf;
 

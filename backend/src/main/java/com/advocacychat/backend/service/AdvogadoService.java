@@ -51,10 +51,6 @@ public class AdvogadoService {
                         "Advogado com id " + id + " nao existe."
                 ));
 
-        if (request.getNome() != null) {
-            model.setNome(request.getNome());
-        }
-
         if (request.getOab() != null) {
             model.setOab(request.getOab());
         }

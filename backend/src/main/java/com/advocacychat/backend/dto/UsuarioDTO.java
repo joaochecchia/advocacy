@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class UsuarioDTO {
     private Long id;
     private String email;
+    private String nome;
     private Role role;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;

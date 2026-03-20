@@ -30,6 +30,8 @@ public class UsuarioModel implements UserDetails {
 
     private String email;
 
+    private String nome;
+
     @Column(name = "senha_hash")
     private String senhaHash;
 

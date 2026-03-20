@@ -27,8 +27,6 @@ public class AdvogadoModel {
     @JoinColumn(name = "escritorio_id")
     private EscritorioModel escritorio;
 
-    private String nome;
-
     private String oab;
 
     private String telefone;

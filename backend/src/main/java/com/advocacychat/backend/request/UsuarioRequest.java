@@ -18,6 +18,9 @@ public record UsuarioRequest(
         String email,
 
         @NotBlank
+        String nome,
+
+        @NotBlank
         @Size(min = 8, max = 15)
         String senhaHash,
 

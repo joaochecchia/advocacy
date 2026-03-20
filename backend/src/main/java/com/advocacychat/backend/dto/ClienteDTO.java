@@ -13,9 +13,6 @@ public class ClienteDTO {
     private Long escritorioId;
 
     @NotBlank
-    private String nome;
-
-    @NotBlank
     private String telefone;
 
     private List<Long> chatIds;

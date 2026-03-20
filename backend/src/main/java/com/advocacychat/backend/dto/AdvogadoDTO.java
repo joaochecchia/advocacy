@@ -11,9 +11,6 @@ public class AdvogadoDTO {
     private Long escritorioId;
 
     @NotBlank
-    private String nome;
-
-    @NotBlank
     @Size(min = 8, max = 10)
     private String oab;
 

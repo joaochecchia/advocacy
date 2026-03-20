@@ -6,11 +6,11 @@ import com.advocacychat.backend.model.AdvogadoModel;
 public record AdvogadoResponse(
         Long usuarioId,
         String email,
+        String nome,
         Role role,
         Boolean ativo,
 
         Long advogadoId,
-        String nome,
         String oab,
         String telefone,
 
@@ -28,11 +28,11 @@ public record AdvogadoResponse(
         return new AdvogadoResponse(
                 advogado.getUsuario() != null ? advogado.getUsuario().getId() : null,
                 advogado.getUsuario() != null ? advogado.getUsuario().getEmail() : null,
+                advogado.getUsuario() != null ? advogado.getUsuario().getNome() : null,
                 advogado.getUsuario() != null ? advogado.getUsuario().getRole() : null,
                 advogado.getUsuario() != null ? advogado.getUsuario().getAtivo() : null,
 
                 advogado.getId(),
-                advogado.getNome(),
                 advogado.getOab(),
                 advogado.getTelefone(),
 

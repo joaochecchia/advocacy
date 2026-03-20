@@ -23,6 +23,5 @@ public class DonoModel {
     @JoinColumn(name = "escritorio_id")
     private EscritorioModel escritorio;
 
-    private String nome;
     private String telefone;
 }

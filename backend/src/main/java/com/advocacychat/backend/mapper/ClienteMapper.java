@@ -15,7 +15,6 @@ public class ClienteMapper {
         ClienteDTO dto = new ClienteDTO();
 
         dto.setId(model.getId());
-        dto.setNome(model.getNome());
         dto.setCpf(model.getCpf());
         dto.setTelefone(model.getTelefone());
 
@@ -45,7 +44,6 @@ public class ClienteMapper {
         ClienteModel model = new ClienteModel();
 
         model.setId(dto.getId());
-        model.setNome(dto.getNome());
         model.setCpf(dto.getCpf());
         model.setTelefone(dto.getTelefone());
 

@@ -44,10 +44,6 @@ public class ClienteService {
                         "Cliente com id " + id + " nao existe."
                 ));
 
-        if (request.getNome() != null) {
-            model.setNome(request.getNome());
-        }
-
         if (request.getCpf() != null) {
             model.setCpf(request.getCpf());
         }

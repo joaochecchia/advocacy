@@ -26,7 +26,7 @@ public record ClienteResponse(
     public static ClienteResponse fromModel(ClienteModel cliente) {
         return new ClienteResponse(
                 cliente.getUsuario() != null ? cliente.getUsuario().getId() : null,
-                cliente.getNome(),
+                cliente.getUsuario() != null ? cliente.getUsuario().getNome() : null,
                 cliente.getUsuario() != null ? cliente.getUsuario().getEmail() : null,
                 cliente.getUsuario() != null ? cliente.getUsuario().getRole() : null,
                 cliente.getUsuario() != null ? cliente.getUsuario().getAtivo() : null,
